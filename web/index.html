@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Field Guide to Being Human</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <button class="theme-toggle" id="theme-toggle">☀</button>
+  <!-- World Map View -->
+  <div id="world-map" class="view active">
+    <header class="map-header">
+      <h1>A Field Guide to Being Human</h1>
+      <p class="subtitle">Part II — Understanding Other People</p>
+    </header>
+    <div class="map-container">
+      <svg id="map-svg" viewBox="0 0 800 480" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </div>
+
+  <!-- Chapter View -->
+  <div id="chapter-view" class="view">
+    <nav class="chapter-nav">
+      <button id="back-to-map" class="btn-back">← Map</button>
+      <span class="chapter-label">Chapter 31</span>
+    </nav>
+
+    <div class="chapter-content">
+      <!-- Visual -->
+      <section class="chapter-visual">
+        <img src="chapters/part-02-other-people/31-why-do-people-resist-change.svg" alt="Five stick figures: one climbing a ladder toward a gold star, four pulling it down with ropes">
+      </section>
+
+      <!-- Audio Player -->
+      <section class="chapter-audio">
+        <button id="audio-toggle" class="audio-btn">▶ Listen</button>
+        <div class="audio-progress">
+          <div class="audio-bar" id="audio-bar"></div>
+        </div>
+        <span class="audio-time" id="audio-time">0:00</span>
+        <audio id="audio-player" src="chapters/part-02-other-people/31-why-do-people-resist-change.mp3" preload="metadata"></audio>
+      </section>
+
+      <!-- Story -->
+      <section class="chapter-story">
+        <h2 class="chapter-title">Why Do People Resist Change Even When It Benefits Them?</h2>
+        <div class="story-text" id="story-text"></div>
+      </section>
+
+      <!-- Quiz Button -->
+      <div class="chapter-actions">
+        <button id="start-quiz" class="btn-primary">Test Your Understanding →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz View -->
+  <div id="quiz-view" class="view">
+    <nav class="chapter-nav">
+      <button id="quiz-back" class="btn-back">← Story</button>
+      <span class="chapter-label">Challenge</span>
+    </nav>
+
+    <div class="quiz-content">
+      <div class="quiz-progress" id="quiz-progress"></div>
+      <div class="quiz-card" id="quiz-card">
+        <p class="quiz-situation" id="quiz-situation"></p>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback hidden" id="quiz-feedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion View -->
+  <div id="complete-view" class="view">
+    <div class="complete-content">
+      <div class="complete-star">★</div>
+      <h2 class="complete-principle" id="complete-principle"></h2>
+      <p class="complete-subtext" id="complete-subtext"></p>
+      <div class="complete-reflection">
+        <p class="reflection-label">Reflect</p>
+        <p class="reflection-question" id="reflection-question"></p>
+      </div>
+      <button id="back-to-map-final" class="btn-primary">Back to Map ★</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

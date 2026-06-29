@@ -1,0 +1,13 @@
+node_modules/
+.next/
+dist/
+.turbo/
+.env
+.env.*
+*.mp3
+
+# misc
+.DS_Store
+*.log
+coverage/
+.playwright-mcp

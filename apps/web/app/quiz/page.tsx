@@ -1,0 +1,33 @@
+'use client';
+
+import { QuizShell } from '@/modules/quiz';
+import { useRouter, useSearchParams } from 'next/navigation';
+import quizData from '../../../../content/chapters/part-02/31.quiz.json';
+
+export default function QuizPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromGame = searchParams.get('from') === 'game';
+
+  const handleComplete = (score: number) => {
+    const params = new URLSearchParams();
+    if (fromGame) params.set('from', 'game');
+    params.set('score', String(score));
+    router.push(`/result?${params.toString()}`);
+  };
+
+  return (
+    <main className="max-w-[620px] mx-auto px-4 pb-12">
+      <nav className="sticky top-0 z-10 flex items-center py-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+        <button onClick={() => router.back()} className="text-sm text-[var(--color-text)]">
+          ← Story
+        </button>
+        <span className="ml-auto text-xs text-[var(--color-text-dim)]">Challenge</span>
+      </nav>
+
+      <section className="mt-6">
+        <QuizShell challenges={quizData.challenges} onComplete={handleComplete} />
+      </section>
+    </main>
+  );
+}

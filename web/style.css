@@ -1,0 +1,249 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #FAFAFA;
+  --surface: #FFF;
+  --text: #1A1A1A;
+  --text-dim: #777;
+  --border: #E0E0E0;
+  --gold: #DAA520;
+  --gold-dim: #8B6914;
+  --correct: #2E7D32;
+  --wrong: #C62828;
+  --map-bg: #2C2C2C;
+  --map-path: #FFFFFF;
+  --map-locked: #555;
+  --font: 'IBM Plex Sans', -apple-system, sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg: #0D0D0D;
+  --surface: #1A1A1A;
+  --text: #E8E8E8;
+  --text-dim: #888;
+  --border: #2A2A2A;
+  --map-bg: #0D0D0D;
+  --map-path: #FFFFFF;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.65;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Views */
+.view { display: none; min-height: 100vh; }
+.view.active { display: block; }
+
+/* World Map */
+#world-map { background: var(--map-bg); }
+.map-header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+.map-header h1 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #FFF;
+}
+.subtitle {
+  color: #999;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+.map-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+#map-svg { width: 100%; height: auto; }
+
+/* Chapter Nav */
+.chapter-nav {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+.btn-back {
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--text);
+}
+.chapter-label {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* Chapter Content */
+.chapter-content {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+.chapter-visual { margin-bottom: 1.5rem; }
+.chapter-visual img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+.chapter-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+}
+.story-text h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 2rem 0 0.8rem;
+  color: var(--text);
+}
+.story-text p {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* Audio Player */
+.chapter-audio {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+}
+.audio-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.35rem 0.7rem;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 3px;
+}
+.audio-btn.playing { background: var(--text); color: var(--bg); }
+.audio-progress {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.audio-bar {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.3s;
+}
+.audio-time { font-size: 0.75rem; color: var(--text-dim); min-width: 3rem; }
+
+/* Buttons */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 2rem;
+  border-radius: 3px;
+}
+.btn-primary:hover { opacity: 0.85; }
+.chapter-actions { margin-top: 2rem; }
+
+/* Quiz */
+.quiz-content { max-width: 620px; margin: 0 auto; padding: 2rem 1rem; }
+.quiz-progress { display: flex; gap: 6px; margin-bottom: 2rem; }
+.quiz-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.quiz-dot.done { background: var(--gold); }
+.quiz-dot.current { background: var(--text); }
+.quiz-situation { font-size: 1.05rem; margin-bottom: 1.5rem; line-height: 1.6; }
+.quiz-options { display: flex; flex-direction: column; gap: 0.6rem; }
+.quiz-option {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  text-align: left;
+  border-radius: 3px;
+  line-height: 1.5;
+  transition: border-color 0.2s;
+}
+.quiz-option:hover { border-color: var(--text-dim); }
+.quiz-option.correct { border-color: var(--correct); background: rgba(46, 125, 50, 0.08); }
+.quiz-option.wrong { border-color: var(--wrong); background: rgba(198, 40, 40, 0.08); }
+.quiz-option.disabled { pointer-events: none; opacity: 0.5; }
+.quiz-feedback {
+  margin-top: 1rem; padding: 1rem; font-size: 0.9rem; line-height: 1.5;
+  border-left: 3px solid var(--text-dim); background: var(--surface); border-radius: 0 3px 3px 0;
+}
+.quiz-feedback.correct { border-color: var(--correct); }
+.quiz-feedback.wrong { border-color: var(--wrong); }
+.hidden { display: none; }
+.quiz-next {
+  margin-top: 1.2rem; padding: 0.6rem 1.2rem;
+  background: var(--text); color: var(--bg); border: none;
+  font-family: var(--font); font-weight: 500; cursor: pointer; border-radius: 3px;
+}
+
+/* Completion */
+.complete-content { max-width: 480px; margin: 0 auto; padding: 4rem 1.5rem; text-align: center; }
+.complete-star { font-size: 3.5rem; color: var(--gold); margin-bottom: 1.5rem; }
+.complete-principle { font-size: 1.3rem; font-weight: 500; margin-bottom: 0.8rem; line-height: 1.3; }
+.complete-subtext { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 2.5rem; }
+.complete-reflection { border-top: 1px solid var(--border); padding-top: 1.5rem; margin-bottom: 2rem; }
+.reflection-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 0.5rem; }
+.reflection-question { font-style: italic; font-size: 1rem; }
+
+@media (max-width: 600px) {
+  .map-header h1 { font-size: 1.1rem; }
+  .chapter-title { font-size: 1.2rem; }
+  .chapter-content { padding: 1rem 0.75rem 2rem; }
+  .complete-content { padding: 3rem 1rem; }
+}
