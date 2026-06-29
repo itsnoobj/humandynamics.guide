@@ -12,6 +12,11 @@ import quizJson from '../../../content/chapters/part-02/31.quiz.json';
  */
 export const chapter31 = {
   ...chapterJson,
+  // Override the source filenames with the asset names served from
+  // `public/content/`. The chapter page builds `/content/${visual|audio}`,
+  // so these must match the files copied into `public/content/`.
+  visual: '31.svg',
+  audio: '31.mp3',
   sections: chapterJson.sections.map((s) => ({
     ...s,
     type: s.type as StorySectionType,
