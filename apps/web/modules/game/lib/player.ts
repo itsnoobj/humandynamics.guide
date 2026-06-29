@@ -94,9 +94,20 @@ export class Player {
     const bodyBottom = top + this.height - this.width * 0.6;
 
     ctx.save();
+    // Render the figure slightly larger than its hitbox for presence, anchored
+    // at the feet so the visual growth never sinks below the ground line. This
+    // is purely cosmetic — the collision box (width/height) is unchanged.
+    const visualScale = 1.18;
+    const feetX = cx;
+    const feetY = top + this.height;
+    ctx.translate(feetX, feetY);
+    ctx.scale(visualScale, visualScale);
+    ctx.translate(-feetX, -feetY);
+
     ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 3;
     ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
 
     // Head
     ctx.beginPath();

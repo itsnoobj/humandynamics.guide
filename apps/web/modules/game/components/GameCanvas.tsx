@@ -16,6 +16,31 @@ const GROUND_FRACTION = 0.82; // ground line as a fraction of canvas height
 const GRAVITY = 0.8; // px/frame^2
 const BASE_SPEED = 6; // px/frame at difficulty 0
 const TARGET_FRAME_MS = 1000 / 60; // physics tuned for 60fps; delta-scaled below
+const TILE = 32; // ground tile size in px (matches ground-tile.svg)
+const CLOUD_PARALLAX = 0.25; // clouds drift at a fraction of the ground speed
+
+/** SVG sprite sources, served from /public/assets/game. */
+const ASSET_SOURCES = {
+  ground: '/assets/game/ground-tile.svg',
+  pipe: '/assets/game/pipe.svg',
+  block: '/assets/game/block.svg',
+  cloud: '/assets/game/cloud.svg',
+} as const;
+
+type AssetKey = keyof typeof ASSET_SOURCES;
+
+/** Background cloud layout (base positions in a scrolling, wrapping field). */
+const CLOUDS: { baseX: number; y: number; scale: number }[] = [
+  { baseX: 120, y: 70, scale: 1.6 },
+  { baseX: 520, y: 130, scale: 1.1 },
+  { baseX: 900, y: 50, scale: 2.0 },
+  { baseX: 1300, y: 110, scale: 1.35 },
+];
+
+/** True once an image has finished decoding and is safe to draw. */
+function isReady(img: HTMLImageElement | undefined): img is HTMLImageElement {
+  return !!img && img.complete && img.naturalWidth > 0;
+}
 
 /**
  * Full-viewport canvas runner.
@@ -35,6 +60,8 @@ export function GameCanvas() {
   const nextSpawnAtRef = useRef(0); // distance threshold for the next spawn
   const groundYRef = useRef(0);
   const sizeRef = useRef({ width: 0, height: 0 });
+  const imagesRef = useRef<Partial<Record<AssetKey, HTMLImageElement>>>({});
+  const [assetsReady, setAssetsReady] = useState(false);
 
   const game = useGameState();
   // Mirror the phase into a ref so the frame callback reads the live value.
@@ -74,6 +101,34 @@ export function GameCanvas() {
     return () => window.removeEventListener('resize', resize);
   }, [resize]);
 
+  // Preload all SVG sprites before the game becomes playable. We flip
+  // `assetsReady` only once every image has resolved (errors count as resolved
+  // so a single missing asset can't wedge the loading screen forever).
+  useEffect(() => {
+    const entries = Object.entries(ASSET_SOURCES) as [AssetKey, string][];
+    const images: Partial<Record<AssetKey, HTMLImageElement>> = {};
+    let settled = 0;
+    let cancelled = false;
+
+    const onSettle = () => {
+      settled += 1;
+      if (settled === entries.length && !cancelled) setAssetsReady(true);
+    };
+
+    for (const [key, src] of entries) {
+      const img = new Image();
+      img.onload = onSettle;
+      img.onerror = onSettle;
+      img.src = src;
+      images[key] = img;
+    }
+    imagesRef.current = images;
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const initWorld = useCallback(() => {
     const groundY = groundYRef.current || sizeRef.current.height * GROUND_FRACTION;
     playerRef.current = new Player({ groundY });
@@ -89,25 +144,69 @@ export function GameCanvas() {
     if (!ctx) return;
     const { width, height } = sizeRef.current;
     const groundY = groundYRef.current;
+    const distance = distanceRef.current;
+    const images = imagesRef.current;
 
-    // Background
+    // Base background fill.
     ctx.fillStyle = BG;
     ctx.fillRect(0, 0, width, height);
 
-    // Ground line
-    ctx.strokeStyle = '#3a3a3a';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, groundY);
-    ctx.lineTo(width, groundY);
-    ctx.stroke();
+    // Subtle sky-depth darkening at the very top, fading into the base bg.
+    const sky = ctx.createLinearGradient(0, 0, 0, Math.max(1, height * 0.45));
+    sky.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
+    sky.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, width, height * 0.45);
 
-    // Obstacles
-    for (const obstacle of obstaclesRef.current) {
-      obstacle.draw(ctx);
+    // Parallax clouds: drift slower than the foreground and wrap across a field
+    // wider than the viewport so they recycle seamlessly.
+    const cloudImg = images.cloud;
+    if (isReady(cloudImg)) {
+      const baseW = cloudImg.naturalWidth || 64;
+      const baseH = cloudImg.naturalHeight || 32;
+      for (const cloud of CLOUDS) {
+        const w = baseW * cloud.scale;
+        const h = baseH * cloud.scale;
+        const span = width + w * 2;
+        const x = ((((cloud.baseX - distance * CLOUD_PARALLAX) % span) + span) % span) - w;
+        ctx.drawImage(cloudImg, x, cloud.y, w, h);
+      }
     }
 
-    // Player
+    // Repeating ground: a continuous strip of 32x32 tiles from the ground line
+    // down to the bottom edge, scrolling left with the world.
+    const groundImg = images.ground;
+    if (isReady(groundImg)) {
+      const offset = ((distance % TILE) + TILE) % TILE;
+      for (let y = groundY; y < height; y += TILE) {
+        for (let x = -offset; x < width; x += TILE) {
+          ctx.drawImage(groundImg, x, y, TILE, TILE);
+        }
+      }
+    } else {
+      // Fallback ground line if the sprite is unavailable.
+      ctx.strokeStyle = '#3a3a3a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, groundY);
+      ctx.lineTo(width, groundY);
+      ctx.stroke();
+    }
+
+    // Obstacles: pipes and blocks rendered from their sprites, sitting on top of
+    // the ground. The collision hitbox (x/y/width/height) is unchanged.
+    const pipeImg = images.pipe;
+    const blockImg = images.block;
+    for (const obstacle of obstaclesRef.current) {
+      const sprite = obstacle.type === 'pipe' ? pipeImg : blockImg;
+      if (isReady(sprite)) {
+        ctx.drawImage(sprite, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+      } else {
+        obstacle.draw(ctx);
+      }
+    }
+
+    // Player (brand stick figure) on top of everything.
     playerRef.current?.draw(ctx, distanceRef.current);
   }, []);
 
@@ -225,7 +324,28 @@ export function GameCanvas() {
 
       {game.phase === 'running' && <GameHUD score={game.score} distance={game.distance} />}
 
-      {game.phase === 'idle' && <StartScreen onStart={handleStart} />}
+      {game.phase === 'idle' && !assetsReady && (
+        <div
+          aria-live="polite"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: BG,
+            color: '#a8a8a8',
+            fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
+            fontSize: '1.1rem',
+            letterSpacing: '0.05em',
+            zIndex: 10,
+          }}
+        >
+          Loading…
+        </div>
+      )}
+
+      {game.phase === 'idle' && assetsReady && <StartScreen onStart={handleStart} />}
 
       {game.phase === 'hit' && (
         <HitInterstitial
