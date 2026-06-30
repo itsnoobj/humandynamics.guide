@@ -350,7 +350,7 @@ export default function LandingPage() {
         {/* Sample mission — below cards */}
         <div
           style={{
-            marginTop: '1.5rem',
+            marginTop: '2.5rem',
             padding: '0.6rem 1.2rem',
             border: 'none',
             fontSize: '0.85rem',
