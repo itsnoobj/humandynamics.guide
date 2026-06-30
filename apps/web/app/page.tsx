@@ -156,7 +156,7 @@ export default function LandingPage() {
               className="click-hand"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="var(--color-text)"
+              stroke="var(--color-text-dim)"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -188,7 +188,7 @@ export default function LandingPage() {
                 cy="85"
                 r="6"
                 fill="#DAA520"
-                stroke="var(--color-text)"
+                stroke="var(--color-text-dim)"
                 strokeWidth="1"
               />
               <circle
@@ -196,7 +196,7 @@ export default function LandingPage() {
                 cy="58"
                 r="6"
                 fill="#DAA520"
-                stroke="var(--color-text)"
+                stroke="var(--color-text-dim)"
                 strokeWidth="1"
               />
               <circle cx="245" cy="38" r="7" fill="none" stroke="#DAA520" strokeWidth="2">
@@ -262,7 +262,7 @@ export default function LandingPage() {
               className="click-hand"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="var(--color-text)"
+              stroke="var(--color-text-dim)"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -296,13 +296,41 @@ export default function LandingPage() {
                   cy="55"
                   r="6"
                   fill="none"
-                  stroke="var(--color-text)"
+                  stroke="var(--color-text-dim)"
                   strokeWidth="2"
                 />
-                <line x1="55" y1="61" x2="55" y2="78" stroke="var(--color-text)" strokeWidth="2" />
-                <line x1="55" y1="78" x2="49" y2="95" stroke="var(--color-text)" strokeWidth="2" />
-                <line x1="55" y1="78" x2="61" y2="95" stroke="var(--color-text)" strokeWidth="2" />
-                <line x1="55" y1="68" x2="63" y2="64" stroke="var(--color-text)" strokeWidth="2" />
+                <line
+                  x1="55"
+                  y1="61"
+                  x2="55"
+                  y2="78"
+                  stroke="var(--color-text-dim)"
+                  strokeWidth="2"
+                />
+                <line
+                  x1="55"
+                  y1="78"
+                  x2="49"
+                  y2="95"
+                  stroke="var(--color-text-dim)"
+                  strokeWidth="2"
+                />
+                <line
+                  x1="55"
+                  y1="78"
+                  x2="61"
+                  y2="95"
+                  stroke="var(--color-text-dim)"
+                  strokeWidth="2"
+                />
+                <line
+                  x1="55"
+                  y1="68"
+                  x2="63"
+                  y2="64"
+                  stroke="var(--color-text-dim)"
+                  strokeWidth="2"
+                />
               </g>
               {/* Obstacles */}
               <rect
@@ -403,7 +431,7 @@ export default function LandingPage() {
           transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
           display: block;
         }
-        @media (max-width: 600px) { .glimpse-card { min-width: 100% !important; } .glimpse-card svg { max-height: 55px !important; } .glimpse-card > div { padding: 0.4rem 0.6rem !important; } .click-hand { width: 18px !important; height: 18px !important; top: -8px !important; right: -8px !important; }
+        @media (max-width: 600px) { .glimpse-card { min-width: 100% !important; } .glimpse-card svg { max-height: 55px !important; } .glimpse-card > div { padding: 0.4rem 0.6rem !important; } .click-hand { opacity: 0.6; width: 18px !important; height: 18px !important; top: -8px !important; right: -8px !important; }
          } .glimpse-card:hover {
           border-color: rgba(218, 165, 32, 0.4) !important;
           transform: translateY(-3px);
@@ -424,7 +452,7 @@ export default function LandingPage() {
         .glimpse-card:hover .blob-border {
           opacity: 0.8;
         }
-        .click-hand {
+        .click-hand { opacity: 0.6;
           animation: clickShake 0.8s ease-in-out infinite;
         }
         @keyframes clickShake {
