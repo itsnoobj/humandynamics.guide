@@ -8,6 +8,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
+import { availableChapterIds } from '@/lib/hierarchy';
 
 /** A region as rendered on the map. Mirrors the shape used by the hierarchy. */
 export interface RegionMapRegion {
@@ -276,6 +277,7 @@ interface RegionZoneProps {
   completedCount: number;
   total: number;
   accent: string;
+  locked: boolean;
   hovered: boolean;
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
@@ -289,6 +291,7 @@ function RegionZone({
   completedCount,
   total,
   accent,
+  locked,
   hovered,
   onHover,
   onSelect,
@@ -302,23 +305,24 @@ function RegionZone({
 
   return (
     <g
-      role="button"
-      tabIndex={0}
-      aria-label={`${region.title} — ${completedCount} of ${total} missions complete`}
-      onClick={() => onSelect(region.id)}
-      onKeyDown={(e) => {
+      role={locked ? 'img' : 'button'}
+      tabIndex={locked ? undefined : 0}
+      aria-label={locked ? `${region.title} — coming soon` : `${region.title} — ${completedCount} of ${total} missions complete`}
+      onClick={locked ? undefined : () => onSelect(region.id)}
+      onKeyDown={locked ? undefined : (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onSelect(region.id);
         }
       }}
-      onMouseEnter={() => onHover(region.id)}
-      onMouseLeave={() => onHover(null)}
-      onFocus={() => onHover(region.id)}
-      onBlur={() => onHover(null)}
+      onMouseEnter={locked ? undefined : () => onHover(region.id)}
+      onMouseLeave={locked ? undefined : () => onHover(null)}
+      onFocus={locked ? undefined : () => onHover(region.id)}
+      onBlur={locked ? undefined : () => onHover(null)}
       style={{
-        cursor: 'pointer',
-        filter: hovered ? `drop-shadow(0 0 10px ${accent})` : 'none',
+        cursor: locked ? 'default' : 'pointer',
+        opacity: locked ? 0.35 : 1,
+        filter: hovered && !locked ? `drop-shadow(0 0 10px ${accent})` : 'none',
         transition: 'filter 150ms ease',
       }}
     >
@@ -486,6 +490,7 @@ export function RegionMap({
           {placed.map(({ region, pos }) => {
             const total = region.missions.length;
             const completedCount = region.missions.filter((id) => completedMissions.has(id)).length;
+            const hasAvailableContent = region.missions.some((id) => availableChapterIds.has(id));
             return (
               <RegionZone
                 key={region.id}
@@ -495,6 +500,7 @@ export function RegionMap({
                 completedCount={completedCount}
                 total={total}
                 accent={accent}
+                locked={!hasAvailableContent}
                 hovered={hoveredId === region.id}
                 onHover={setHoveredId}
                 onSelect={(id) => router.push(`/worlds/${worldId}/region/${id}`)}

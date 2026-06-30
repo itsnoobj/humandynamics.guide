@@ -1,5 +1,3 @@
-import { notFound } from 'next/navigation';
-
 import { loadChapter, loadQuiz } from '@/lib/content';
 import { QuizClient } from './QuizClient';
 
@@ -21,7 +19,9 @@ export default async function QuizPage({ params }: QuizPageProps) {
   const [quiz, chapter] = await Promise.all([loadQuiz(id), loadChapter(id)]);
 
   if (!quiz) {
-    notFound();
+    const { redirect } = await import('next/navigation');
+    redirect(`/chapter/${id}`);
+    return null; // unreachable, but satisfies TS narrowing
   }
 
   return (

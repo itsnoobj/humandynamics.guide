@@ -36,6 +36,8 @@ export interface WorldMapProps {
   showUnlocked?: { from: string; to: string } | null;
   /** Called when the unlock celebration finishes or is dismissed. */
   onUnlockedDone?: () => void;
+  /** IDs of chapters that have content. Nodes not in this list render as locked. */
+  availableIds?: string[];
 }
 
 const GOLD = '#DAA520';
@@ -65,6 +67,7 @@ export function WorldMap({
   regionId,
   showUnlocked,
   onUnlockedDone,
+  availableIds,
 }: WorldMapProps) {
   const router = useRouter();
   const completedChapters = useProgressStore((state) => state.completedChapters);
@@ -170,18 +173,21 @@ export function WorldMap({
             />
           ))}
 
-          {nodes.map((node) => (
-            <MapNode
-              key={node.id}
-              x={node.x}
-              y={node.y}
-              label={node.label}
-              title={node.title}
-              status={node.status}
-              accent={accentColor}
-              onClick={() => router.push(missionHref(node.id))}
-            />
-          ))}
+          {nodes.map((node) => {
+            const isLocked = availableIds && !availableIds.includes(node.id);
+            return (
+              <MapNode
+                key={node.id}
+                x={node.x}
+                y={node.y}
+                label={node.label}
+                title={node.title}
+                status={isLocked ? 'locked' : node.status}
+                accent={accentColor}
+                onClick={isLocked ? undefined : () => router.push(missionHref(node.id))}
+              />
+            );
+          })}
 
           {recommendedNode && (
             <PlayerIndicator x={recommendedNode.x} y={recommendedNode.y} accent={accentColor} />

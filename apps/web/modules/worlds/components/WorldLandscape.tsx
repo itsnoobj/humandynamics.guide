@@ -10,6 +10,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { useProgressStore } from '@/store/progressStore';
 import type { World } from '@/lib/hierarchy';
+import { availableChapterIds } from '@/lib/hierarchy';
 
 /** Props for {@link WorldLandscape}. */
 export interface WorldLandscapeProps {
@@ -169,6 +170,7 @@ function WorldZone({
   x,
   y,
   progressed,
+  locked,
   hovered,
   onHover,
   onSelect,
@@ -177,31 +179,33 @@ function WorldZone({
   x: number;
   y: number;
   progressed: boolean;
+  locked: boolean;
   hovered: boolean;
   onHover: (id: number | null) => void;
   onSelect: (id: number) => void;
 }) {
-  const stroke = hovered ? world.accent : WHITE;
+  const stroke = locked ? '#555' : hovered ? world.accent : WHITE;
 
   return (
     <g
-      role="button"
-      tabIndex={0}
-      aria-label={`${world.worldName} — ${world.title}`}
-      onClick={() => onSelect(world.id)}
-      onKeyDown={(e) => {
+      role={locked ? 'img' : 'button'}
+      tabIndex={locked ? undefined : 0}
+      aria-label={locked ? `${world.worldName} — coming soon` : `${world.worldName} — ${world.title}`}
+      onClick={locked ? undefined : () => onSelect(world.id)}
+      onKeyDown={locked ? undefined : (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onSelect(world.id);
         }
       }}
-      onMouseEnter={() => onHover(world.id)}
-      onMouseLeave={() => onHover(null)}
-      onFocus={() => onHover(world.id)}
-      onBlur={() => onHover(null)}
+      onMouseEnter={locked ? undefined : () => onHover(world.id)}
+      onMouseLeave={locked ? undefined : () => onHover(null)}
+      onFocus={locked ? undefined : () => onHover(world.id)}
+      onBlur={locked ? undefined : () => onHover(null)}
       style={{
-        cursor: 'pointer',
-        filter: hovered ? `drop-shadow(0 0 8px ${world.accent})` : 'none',
+        cursor: locked ? 'default' : 'pointer',
+        opacity: locked ? 0.35 : 1,
+        filter: hovered && !locked ? `drop-shadow(0 0 8px ${world.accent})` : 'none',
         transition: 'filter 150ms ease',
       }}
     >
@@ -311,6 +315,7 @@ export function WorldLandscape({ worlds }: WorldLandscapeProps) {
             x={pos.x}
             y={pos.y}
             progressed={hasProgress(world, completed)}
+            locked={!missionIds(world).some((id) => availableChapterIds.has(id))}
             hovered={hoveredId === world.id}
             onHover={setHoveredId}
             onSelect={(id) => router.push(`/worlds/${id}`)}

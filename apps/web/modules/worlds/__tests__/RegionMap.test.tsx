@@ -9,6 +9,15 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push }),
 }));
 
+// Mock available chapters so test regions are not locked
+vi.mock('@/lib/hierarchy', async () => {
+  const actual = await vi.importActual('@/lib/hierarchy');
+  return {
+    ...actual,
+    availableChapterIds: new Set(['26', '27', '28', '29', '34', '35']),
+  };
+});
+
 const REGIONS: RegionMapRegion[] = [
   {
     id: 'A',

@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { WorldMap } from '@/modules/map';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
-import { getWorld } from '@/lib/hierarchy';
+import { getWorld, availableChapterIds } from '@/lib/hierarchy';
 import { useProgressStore } from '@/store/progressStore';
 
 /** localStorage flag set by the result page before routing back to a region. */
@@ -26,7 +26,6 @@ function RegionPageInner() {
     if (typeof window === 'undefined' || !region) return;
     if (localStorage.getItem(UNLOCK_FLAG) !== 'true') return;
 
-    // Consume the flag immediately so a refresh doesn't replay the animation.
     localStorage.removeItem(UNLOCK_FLAG);
 
     const missionIds = region.missions;
@@ -106,18 +105,13 @@ function RegionPageInner() {
           regionId={region.id}
           showUnlocked={showUnlocked}
           onUnlockedDone={() => setShowUnlocked(null)}
+          availableIds={[...availableChapterIds]}
         />
       </div>
     </main>
   );
 }
 
-/**
- * Per-region mission map (level 3 of the navigation hierarchy). Reads the world
- * and region ids from the route, then renders only that region's missions as a
- * draggable serpentine map. Shows a "Path Unlocked" celebration when arriving
- * from a freshly completed mission.
- */
 export default function RegionPage() {
   return (
     <Suspense fallback={null}>

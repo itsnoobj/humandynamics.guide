@@ -7,7 +7,7 @@
  * completed, `recommended` marks the first uncompleted mission (a gentle nudge,
  * rendered with a pulsing ring), and everything else is `available`.
  */
-export type MapNodeStatus = 'done' | 'available' | 'recommended';
+export type MapNodeStatus = 'done' | 'available' | 'recommended' | 'locked';
 
 /** Props for {@link MapNode}. */
 export interface MapNodeProps {
@@ -42,6 +42,8 @@ function styleFor(status: MapNodeStatus, label: number, accent: string): NodeSty
   switch (status) {
     case 'done':
       return { fill: accent, stroke: WHITE, textFill: WHITE, text: '★' };
+    case 'locked':
+      return { fill: '#2A2A2A', stroke: '#444444', textFill: '#666666', text: '🔒' };
     case 'recommended':
     case 'available':
     default:
@@ -59,13 +61,14 @@ function styleFor(status: MapNodeStatus, label: number, accent: string): NodeSty
  */
 export function MapNode({ x, y, label, title, status, accent = GOLD, onClick }: MapNodeProps) {
   const { fill, stroke, textFill, text } = styleFor(status, label, accent);
+  const isLocked = status === 'locked';
 
   return (
     <g
-      onClick={() => onClick?.()}
-      role="button"
-      aria-label={`${title} (chapter ${label})`}
-      style={{ cursor: 'pointer' }}
+      onClick={isLocked ? undefined : () => onClick?.()}
+      role={isLocked ? 'img' : 'button'}
+      aria-label={isLocked ? `${title} (coming soon)` : `${title} (chapter ${label})`}
+      style={{ cursor: isLocked ? 'default' : 'pointer', opacity: isLocked ? 0.5 : 1 }}
     >
       {status === 'recommended' && (
         <circle cx={x} cy={y} r={NODE_RADIUS} fill="none" stroke={accent} strokeWidth={2}>
@@ -92,7 +95,7 @@ export function MapNode({ x, y, label, title, status, accent = GOLD, onClick }: 
         {text}
       </text>
       <text x={x} y={y + NODE_RADIUS + 16} textAnchor="middle" fontSize={12} fill="#CCCCCC">
-        {title}
+        {isLocked ? 'Coming soon' : title}
       </text>
     </g>
   );
