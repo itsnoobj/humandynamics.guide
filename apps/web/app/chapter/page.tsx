@@ -28,7 +28,7 @@ export default function ChapterPage() {
 
       <Link
         href="/quiz"
-        className="block w-full mt-8 py-3 text-center text-[var(--color-bg)] bg-[var(--color-text)] rounded-[var(--radius)] font-medium"
+        className="block w-full mt-8 py-3 text-center text-[var(--color-bg)] bg-[var(--color-text)] font-medium"
       >
         Test Your Understanding →
       </Link>

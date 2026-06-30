@@ -3,7 +3,7 @@
 import { Suspense, useEffect } from 'react';
 import { PrincipleReveal, ReflectionPrompt, ResultCTA } from '@/modules/result';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { quiz31 as quizData } from '@/lib/content';
+import { quiz31 as quizData, chapter31 as chapterData } from '@/lib/content';
 import { useProgressStore } from '@/store/progressStore';
 
 /** The chapter this result screen completes. */
@@ -39,6 +39,8 @@ function ResultPageInner() {
         correctCount={totalCount}
         totalCount={totalCount}
         readTime="~5 min read"
+        chapterNumber={CURRENT_CHAPTER_ID}
+        chapterTitle={chapterData.title}
       />
       <ReflectionPrompt question={quizData.reflection} />
       <ResultCTA onContinue={handleContinue} fromGame={fromGame} />

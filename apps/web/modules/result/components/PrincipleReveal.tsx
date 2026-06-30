@@ -13,6 +13,10 @@ export interface PrincipleRevealProps {
   totalCount?: number;
   /** Static, human-friendly read-time label shown as a stat pill. */
   readTime?: string;
+  /** Chapter number, shown as muted context beneath the star (e.g. "Chapter 31"). */
+  chapterNumber?: string | number;
+  /** Chapter title, used as an accessible/context label for the achievement. */
+  chapterTitle?: string;
 }
 
 /**
@@ -26,7 +30,7 @@ function StatBadge({ children }: { children: React.ReactNode }) {
         alignItems: 'center',
         gap: '0.35em',
         padding: '0.35rem 0.75rem',
-        borderRadius: '999px',
+        borderRadius: '0px',
         border: '1px solid var(--color-border)',
         backgroundColor: 'var(--color-surface)',
         fontSize: '0.8rem',
@@ -54,6 +58,8 @@ export function PrincipleReveal({
   correctCount,
   totalCount,
   readTime = '~5 min read',
+  chapterNumber,
+  chapterTitle,
 }: PrincipleRevealProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -93,19 +99,34 @@ export function PrincipleReveal({
       >
         <span
           role="img"
-          aria-label="gold star"
+          aria-label={chapterTitle ? `gold star — ${chapterTitle}` : 'gold star'}
           style={{
-            fontSize: '3.5rem',
+            fontSize: '4rem',
             lineHeight: 1,
             color: 'var(--color-gold)',
             display: 'inline-block',
-            textShadow: '0 0 20px rgba(218,165,32,0.3)',
-            transform: mounted ? 'scale(1)' : 'scale(0)',
-            transition: 'transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+            textShadow: '0 0 28px rgba(218,165,32,0.45)',
+            transform: mounted ? 'scale(1) rotate(0deg)' : 'scale(0.5) rotate(-25deg)',
+            opacity: mounted ? 1 : 0,
+            transition: 'transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 300ms ease-out',
           }}
         >
           ★
         </span>
+
+        {chapterNumber != null && (
+          <span
+            style={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              fontSize: '0.7rem',
+              fontWeight: 500,
+              color: 'var(--color-text-dim)',
+            }}
+          >
+            {`Chapter ${chapterNumber}`}
+          </span>
+        )}
 
         <span
           style={{
