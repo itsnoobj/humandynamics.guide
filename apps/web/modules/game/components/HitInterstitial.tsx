@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export interface HitInterstitialProps {
@@ -16,48 +17,42 @@ export interface HitInterstitialProps {
   chapterId?: string;
 }
 
-const GOLD = 'var(--color-gold)';
+// Hardcoded colors: this always renders on a dark overlay, so it must stay
+// readable regardless of the active light/dark theme. Do NOT swap these for
+// theme variables (var(--color-text) flips to near-black in light mode).
+const GOLD = '#DAA520';
+const WHITE = '#FFFFFF';
+const GREY = '#CCCCCC';
 
 /** Keyframes for the game-event entrance. Injected once via a <style> tag. */
 const KEYFRAMES = `
-@keyframes hit-shake-in {
-  0%   { transform: translateX(-3px); }
-  33%  { transform: translateX(3px); }
-  66%  { transform: translateX(-1px); }
-  100% { transform: translateX(0); }
-}
-@keyframes hit-scale-in {
-  0%   { transform: scale(0.8); opacity: 0; }
-  60%  { transform: scale(1.02); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
-}
-@keyframes hit-fade-in {
+@keyframes hit-backdrop-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-@keyframes hit-glow-pulse {
-  0%, 100% { text-shadow: 0 0 6px rgba(212, 175, 55, 0.45), 0 0 2px rgba(212, 175, 55, 0.6); }
-  50%      { text-shadow: 0 0 18px rgba(212, 175, 55, 0.85), 0 0 6px rgba(212, 175, 55, 0.9); }
+@keyframes hit-slam-in {
+  0%   { transform: scale(1.5); opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
-@keyframes hit-bolt-pulse {
-  0%, 100% { transform: scale(1) rotate(-4deg); }
-  25%      { transform: scale(1.18) rotate(4deg); }
-  50%      { transform: scale(1.05) rotate(-2deg); }
-  75%      { transform: scale(1.12) rotate(2deg); }
+@keyframes hit-rise-in {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 `;
 
 /**
- * Full-screen game-event popup shown when the runner enters the `hit` phase.
+ * Full-screen game-event takeover shown when the runner enters the `hit` phase.
  *
- * Reads less like a dialog box and more like a dramatic in-game event: the
- * background gives a quick screen-shake, the card scales in, an ⚡ pulses, and
- * an "OBSTACLE HIT!" headline glows. The mission title and situation are shown
- * as the challenge prompt, with a single call to action routing to the chapter
- * reader (`/chapter?from=game`).
+ * Deliberately not a card/dialog box: the whole screen goes solid-dark and the
+ * content sits directly on the backdrop. The "⚡ OBSTACLE HIT" headline slams in
+ * with a glowing gold text-shadow, followed by the mission title and situation.
+ * A single outlined call-to-action routes to the chapter reader
+ * (`/chapter?from=game`).
  */
 export function HitInterstitial({ title, situation, onContinue, chapterId }: HitInterstitialProps) {
   const router = useRouter();
+  const [hover, setHover] = useState(false);
 
   const handleContinue = () => {
     const proceed = onContinue?.();
@@ -77,115 +72,99 @@ export function HitInterstitial({ title, situation, onContinue, chapterId }: Hit
         position: 'absolute',
         inset: 0,
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'radial-gradient(circle at center, rgba(40, 30, 0, 0.55), rgba(0, 0, 0, 0.78))',
-        backdropFilter: 'blur(3px)',
+        background: 'rgba(0, 0, 0, 0.9)',
         zIndex: 20,
         fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
+        textAlign: 'center',
         padding: '1.5rem',
-        animation: 'hit-shake-in 0.3s ease-out, hit-fade-in 0.2s ease-out',
+        animation: 'hit-backdrop-in 0.2s ease-out',
       }}
     >
       <style>{KEYFRAMES}</style>
 
       <div
+        aria-hidden="true"
         style={{
-          width: '100%',
-          maxWidth: '440px',
-          background: 'linear-gradient(180deg, #1c1c1c 0%, #121212 100%)',
-          border: `1px solid ${GOLD}`,
-          borderRadius: '0px',
-          padding: '2.25rem 1.75rem 2rem',
-          textAlign: 'center',
-          boxShadow: '0 0 0 1px rgba(212, 175, 55, 0.15), 0 24px 70px rgba(0, 0, 0, 0.6)',
-          animation: 'hit-scale-in 0.3s ease-out both',
+          color: GOLD,
+          fontSize: '1.5rem',
+          fontWeight: 800,
+          textTransform: 'uppercase',
+          letterSpacing: '3px',
+          textShadow:
+            '0 0 6px rgba(218, 165, 32, 0.9), 0 0 16px rgba(218, 165, 32, 0.7), 0 0 32px rgba(218, 165, 32, 0.45)',
+          animation: 'hit-slam-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both',
         }}
       >
-        <div
-          aria-hidden="true"
-          style={{
-            fontSize: '3rem',
-            lineHeight: 1,
-            color: GOLD,
-            display: 'inline-block',
-            marginBottom: '0.5rem',
-            animation: 'hit-bolt-pulse 0.9s ease-in-out infinite',
-            filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.6))',
-          }}
-        >
-          ⚡
-        </div>
-
-        <div
-          style={{
-            color: GOLD,
-            fontSize: 'clamp(1.6rem, 5vw, 2.1rem)',
-            fontWeight: 800,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginBottom: '0.85rem',
-            animation: 'hit-glow-pulse 1.6s ease-in-out infinite',
-          }}
-        >
-          Obstacle Hit!
-        </div>
-
-        <h2
-          id="hit-title"
-          style={{
-            margin: '0 0 0.5rem',
-            color: 'var(--color-text)',
-            fontSize: '1.2rem',
-            fontWeight: 700,
-            letterSpacing: '-0.01em',
-          }}
-        >
-          {title}
-        </h2>
-
-        <p
-          style={{
-            margin: '0 auto',
-            maxWidth: '340px',
-            color: 'var(--color-text-dim)',
-            fontSize: '0.9rem',
-            lineHeight: 1.5,
-          }}
-        >
-          {situation}
-        </p>
-
-        <div
-          style={{
-            height: '1px',
-            width: '100%',
-            background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`,
-            margin: '1.5rem 0',
-          }}
-        />
-
-        <button
-          type="button"
-          onClick={handleContinue}
-          style={{
-            display: 'inline-block',
-            width: '100%',
-            padding: '0.9rem 1.25rem',
-            background: GOLD,
-            color: '#0D0D0D',
-            border: 'none',
-            borderRadius: '0px',
-            fontSize: '1rem',
-            fontWeight: 700,
-            letterSpacing: '0.02em',
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-          }}
-        >
-          Accept the Challenge →
-        </button>
+        ⚡ Obstacle Hit
       </div>
+
+      <div
+        aria-hidden="true"
+        style={{
+          width: '60px',
+          height: '2px',
+          background: GOLD,
+          margin: '1rem auto',
+          animation: 'hit-rise-in 0.35s ease-out 0.1s both',
+        }}
+      />
+
+      <h2
+        id="hit-title"
+        style={{
+          margin: 0,
+          color: WHITE,
+          fontSize: '1.3rem',
+          fontWeight: 700,
+          letterSpacing: '-0.01em',
+          animation: 'hit-rise-in 0.35s ease-out 0.15s both',
+        }}
+      >
+        {title}
+      </h2>
+
+      <p
+        style={{
+          margin: '0.85rem auto 0',
+          maxWidth: '400px',
+          color: GREY,
+          fontSize: '0.95rem',
+          lineHeight: 1.55,
+          animation: 'hit-rise-in 0.35s ease-out 0.22s both',
+        }}
+      >
+        {situation}
+      </p>
+
+      <button
+        type="button"
+        onClick={handleContinue}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onFocus={() => setHover(true)}
+        onBlur={() => setHover(false)}
+        style={{
+          marginTop: '2rem',
+          padding: '0.8rem 1.6rem',
+          background: hover ? GOLD : 'transparent',
+          color: hover ? '#0D0D0D' : GOLD,
+          border: `2px solid ${GOLD}`,
+          borderRadius: '0px',
+          fontSize: '1rem',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          transition: 'background 0.18s ease, color 0.18s ease',
+          animation: 'hit-rise-in 0.35s ease-out 0.3s both',
+        }}
+      >
+        Accept the Challenge →
+      </button>
     </div>
   );
 }

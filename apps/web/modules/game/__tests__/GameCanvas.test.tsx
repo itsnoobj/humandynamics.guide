@@ -76,6 +76,6 @@ describe('GameCanvas', () => {
     render(<GameCanvas />);
     // Images resolve on the next tick, flipping assetsReady and revealing the
     // start overlay.
-    expect(await screen.findByText('Tap or Press Space to Begin')).toBeInTheDocument();
+    expect(await screen.findByText('Tap to Run')).toBeInTheDocument();
   });
 });

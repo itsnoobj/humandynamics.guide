@@ -3,36 +3,28 @@
 import Link from 'next/link';
 
 export interface StartScreenProps {
-  /** Big title. */
+  /** Big title shown under the runner. */
   title?: string;
-  /** Emotional hook shown under the title (italic, medium). */
-  hook?: string;
-  /** Plain-language description of the experience (smaller, muted). */
-  description?: string;
   /** Invoked when the player taps / presses space to start. */
   onStart: () => void;
 }
 
 /**
- * The idle-phase landing overlay. Tapping anywhere — or pressing space/enter —
- * starts the run; a secondary link routes to the chapter map for players who'd
- * rather browse.
+ * The idle-phase title screen. Rather than reading like a document, it frames
+ * the moment right before a run: the stick-figure runner is poised mid-stride
+ * on a ground line, with a preview of the obstacles ahead (pipe, block, spike).
+ * Tapping anywhere — or pressing space/enter — starts the run; a small link
+ * routes to the chapter map for players who'd rather browse.
  *
  * Colors are theme-aware via CSS variables so the screen reads well in both
- * light and dark modes. Typography follows a clear hierarchy: a large title,
- * a medium italic hook, a smaller muted description, then a gold pulsing CTA.
+ * light and dark modes.
  */
-export function StartScreen({
-  title = 'A Field Guide to Being Human',
-  hook = 'Every obstacle is a lesson. Every lesson makes you wiser.',
-  description = 'Run through real workplace dilemmas. Learn through stories.',
-  onStart,
-}: StartScreenProps) {
+export function StartScreen({ title = 'Stories to navigate', onStart }: StartScreenProps) {
   return (
     <div
       role="button"
       tabIndex={0}
-      aria-label="Tap or press space to begin"
+      aria-label="Tap to run"
       onClick={onStart}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -56,11 +48,38 @@ export function StartScreen({
         padding: '1.5rem',
       }}
     >
+      {/* Stick-figure runner, mid-stride. ~80px tall. */}
+      <svg
+        className="fg-game-runner"
+        width="56"
+        height="80"
+        viewBox="0 0 56 80"
+        fill="none"
+        aria-hidden="true"
+        stroke="var(--color-text)"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* head */}
+        <circle cx="30" cy="12" r="8" fill="none" />
+        {/* torso, leaning forward into the run */}
+        <line x1="29" y1="20" x2="24" y2="44" />
+        {/* arms: front arm swung forward, back arm swung behind */}
+        <line x1="27" y1="28" x2="40" y2="24" />
+        <line x1="27" y1="28" x2="14" y2="34" />
+        {/* legs: front leg reaching ahead, back leg pushing off */}
+        <line x1="24" y1="44" x2="38" y2="56" />
+        <line x1="38" y1="56" x2="44" y2="68" />
+        <line x1="24" y1="44" x2="16" y2="60" />
+        <line x1="16" y1="60" x2="20" y2="72" />
+      </svg>
+
       <h1
         style={{
-          margin: 0,
+          margin: '1.25rem 0 0',
           maxWidth: '640px',
-          fontSize: 'clamp(2rem, 6vw, 3rem)',
+          fontSize: 'clamp(1.9rem, 6vw, 2.75rem)',
           fontWeight: 700,
           lineHeight: 1.1,
           letterSpacing: '-0.02em',
@@ -70,67 +89,94 @@ export function StartScreen({
         {title}
       </h1>
 
-      <p
-        style={{
-          margin: '1.25rem 0 0',
-          maxWidth: '480px',
-          fontSize: '1.25rem',
-          fontStyle: 'italic',
-          fontWeight: 500,
-          lineHeight: 1.45,
-          color: 'var(--color-text)',
-        }}
+      {/* Ground line with a preview of the obstacles ahead. */}
+      <svg
+        width="280"
+        height="48"
+        viewBox="0 0 280 48"
+        fill="none"
+        aria-hidden="true"
+        style={{ margin: '1.75rem 0 0', maxWidth: '90%' }}
       >
-        {hook}
-      </p>
+        {/* ground */}
+        <line x1="0" y1="30" x2="280" y2="30" stroke="var(--color-text-dim)" strokeWidth={2} />
 
-      <p
-        style={{
-          margin: '0.75rem 0 2.75rem',
-          maxWidth: '420px',
-          color: 'var(--color-text-dim)',
-          fontSize: '1rem',
-          lineHeight: 1.5,
-        }}
-      >
-        {description}
-      </p>
+        {/* pipe */}
+        <rect
+          x="70"
+          y="14"
+          width="16"
+          height="16"
+          fill="var(--color-surface)"
+          stroke="var(--color-gold)"
+          strokeWidth={2}
+        />
+        {/* block */}
+        <rect x="120" y="16" width="14" height="14" fill="var(--color-gold)" opacity={0.85} />
+        {/* spike */}
+        <path
+          d="M196 30 L204 14 L212 30 Z"
+          fill="var(--color-surface)"
+          stroke="var(--color-gold)"
+          strokeWidth={2}
+        />
+      </svg>
 
       <span
         className="fg-game-pulse"
         style={{
+          marginTop: '2rem',
           color: 'var(--color-gold)',
-          fontSize: '1.25rem',
-          fontWeight: 600,
-          letterSpacing: '0.05em',
+          fontSize: '1.4rem',
+          fontWeight: 800,
+          textTransform: 'uppercase',
+          letterSpacing: '0.12em',
         }}
       >
-        Tap or Press Space to Begin
+        Tap to Run
+      </span>
+
+      <span
+        style={{
+          marginTop: '0.5rem',
+          color: 'var(--color-text-dim)',
+          fontSize: '0.8rem',
+          letterSpacing: '0.04em',
+        }}
+      >
+        or <strong style={{ fontWeight: 600 }}>SPACE</strong> to start
       </span>
 
       <Link
         href="/map"
         onClick={(e) => e.stopPropagation()}
         style={{
-          marginTop: '1.5rem',
+          marginTop: '1.75rem',
           color: 'var(--color-text-dim)',
-          fontSize: '0.95rem',
+          fontSize: '0.85rem',
           textDecoration: 'none',
         }}
       >
-        or explore the Map →
+        ← or explore the map
       </Link>
 
       <style>{`
         .fg-game-pulse {
-          animation: fg-game-pulse 1.4s ease-in-out infinite;
+          animation: fg-game-pulse 1.3s ease-in-out infinite;
         }
         @keyframes fg-game-pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.35; }
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.04); }
+        }
+        .fg-game-runner {
+          animation: fg-game-bob 0.6s ease-in-out infinite;
+        }
+        @keyframes fg-game-bob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
         }
         @media (prefers-reduced-motion: reduce) {
-          .fg-game-pulse { animation: none; }
+          .fg-game-pulse, .fg-game-runner { animation: none; }
         }
       `}</style>
     </div>
