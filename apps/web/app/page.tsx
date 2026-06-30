@@ -137,33 +137,29 @@ export default function LandingPage() {
               position: 'relative',
             }}
           >
-            {/* Click indicator — dot-matrix pointer hand */}
-            <img
-              className="click-hand click-hand-hide"
-              src="/assets/icons/click-hand.png"
-              alt=""
+            {/* Click indicator */}
+            <svg
+              className="click-hand"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--color-text)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               style={{
                 position: 'absolute',
                 top: '-10px',
                 right: '-10px',
-                width: '24px',
-                height: '24px',
+                width: '22px',
+                height: '22px',
                 pointerEvents: 'none',
               }}
-            />
-            <img
-              className="click-hand click-hand-show"
-              src="/assets/icons/click-hand-show.png"
-              alt=""
-              style={{
-                position: 'absolute',
-                top: '-10px',
-                right: '-10px',
-                width: '24px',
-                height: '24px',
-                pointerEvents: 'none',
-              }}
-            />
+            >
+              <path d="M7 15V8.5a1.5 1.5 0 0 1 3 0V13" />
+              <path d="M10 10a1.5 1.5 0 0 1 3 0v1" />
+              <path d="M13 9.5a1.5 1.5 0 0 1 3 0V13" />
+              <path d="M16 10.5a1.5 1.5 0 0 1 3 0V16a5 5 0 0 1-5 5h-3a5 5 0 0 1-5-5v-2" />
+            </svg>
             <svg viewBox="0 0 300 110" style={{ width: '100%', display: 'block' }}>
               <path
                 d="M25 85 Q65 40 135 58 Q195 78 245 38 Q275 22 290 30"
@@ -233,33 +229,29 @@ export default function LandingPage() {
               position: 'relative',
             }}
           >
-            {/* Click indicator — dot-matrix pointer hand */}
-            <img
-              className="click-hand click-hand-hide"
-              src="/assets/icons/click-hand.png"
-              alt=""
+            {/* Click indicator */}
+            <svg
+              className="click-hand"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--color-text)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               style={{
                 position: 'absolute',
                 top: '-10px',
                 right: '-10px',
-                width: '24px',
-                height: '24px',
+                width: '22px',
+                height: '22px',
                 pointerEvents: 'none',
               }}
-            />
-            <img
-              className="click-hand click-hand-show"
-              src="/assets/icons/click-hand-show.png"
-              alt=""
-              style={{
-                position: 'absolute',
-                top: '-10px',
-                right: '-10px',
-                width: '24px',
-                height: '24px',
-                pointerEvents: 'none',
-              }}
-            />
+            >
+              <path d="M7 15V8.5a1.5 1.5 0 0 1 3 0V13" />
+              <path d="M10 10a1.5 1.5 0 0 1 3 0v1" />
+              <path d="M13 9.5a1.5 1.5 0 0 1 3 0V13" />
+              <path d="M16 10.5a1.5 1.5 0 0 1 3 0V16a5 5 0 0 1-5 5h-3a5 5 0 0 1-5-5v-2" />
+            </svg>
             <svg viewBox="0 0 300 110" style={{ width: '100%', display: 'block' }}>
               <line x1="0" y1="95" x2="300" y2="95" stroke="var(--color-border)" strokeWidth="1" />
               {/* Stick figure with bobbing */}
