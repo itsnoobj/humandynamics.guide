@@ -20,32 +20,30 @@ export interface WorldLandscapeProps {
 const GOLD = '#DAA520';
 const WHITE = '#FFFFFF';
 
-/** Fixed serpentine positions for the ten worlds across the 1000×600 canvas. */
+/** Fixed serpentine positions for the ten worlds in a vertical layout (500×1300). */
 const POSITIONS: ReadonlyArray<{ x: number; y: number }> = [
-  { x: 90, y: 200 },
-  { x: 190, y: 410 },
-  { x: 290, y: 190 },
-  { x: 390, y: 420 },
-  { x: 490, y: 200 },
-  { x: 590, y: 410 },
-  { x: 690, y: 190 },
-  { x: 790, y: 420 },
-  { x: 880, y: 210 },
-  { x: 945, y: 405 },
+  { x: 130, y: 80 },
+  { x: 370, y: 200 },
+  { x: 130, y: 320 },
+  { x: 370, y: 440 },
+  { x: 130, y: 560 },
+  { x: 370, y: 680 },
+  { x: 130, y: 800 },
+  { x: 370, y: 920 },
+  { x: 130, y: 1040 },
+  { x: 370, y: 1160 },
 ];
 
 /**
  * Programmatic position for any world index beyond the curated {@link POSITIONS}
  * list, so a hierarchy with more than ten worlds still lays out cleanly (a
- * serpentine band across the canvas) rather than stacking extra worlds on one
+ * serpentine band down the canvas) rather than stacking extra worlds on one
  * point. Keeps the landscape fully data-driven: more worlds → more zones.
  */
 function serpentinePosition(index: number): { x: number; y: number } {
-  const col = index % 5;
-  const row = Math.floor(index / 5);
   return {
-    x: 90 + col * 200,
-    y: row % 2 === 0 ? 200 : 410,
+    x: index % 2 === 0 ? 130 : 370,
+    y: 80 + index * 120,
   };
 }
 
@@ -271,33 +269,37 @@ export function WorldLandscape({ worlds }: WorldLandscapeProps) {
     <div
       style={{
         maxWidth: '100%',
-        overflowX: 'auto',
+        overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
       }}
     >
       <svg
-        viewBox="0 0 1000 600"
+        viewBox="0 0 500 1300"
         preserveAspectRatio="xMidYMid meet"
-        style={{ minWidth: '760px', width: '100%', height: 'auto', display: 'block' }}
+        style={{ width: '100%', height: 'auto', display: 'block' }}
         role="img"
         aria-label="World map — choose a world to explore"
       >
-        <rect x={0} y={0} width={1000} height={600} fill="#16140f" rx={16} />
+        <rect x={0} y={0} width={500} height={1300} fill="#16140f" rx={16} />
 
-        {/* Trails between adjacent worlds. */}
+        {/* Squiggly trails between adjacent worlds. */}
         {placed.slice(0, -1).map(({ pos }, i) => {
           const next = placed[i + 1].pos;
+          const midY = (pos.y + next.y) / 2;
+          // Control points create a nice S-curve between worlds
+          const cp1x = pos.x + (next.x - pos.x) * 0.8;
+          const cp1y = pos.y + (midY - pos.y) * 0.6;
+          const cp2x = next.x - (next.x - pos.x) * 0.8;
+          const cp2y = next.y - (next.y - midY) * 0.6;
           return (
-            <line
+            <path
               key={`trail-${i}`}
-              x1={pos.x}
-              y1={pos.y}
-              x2={next.x}
-              y2={next.y}
+              d={`M ${pos.x} ${pos.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`}
               stroke="#5a554c"
               strokeWidth={2}
-              strokeDasharray="2 10"
+              strokeDasharray="4 8"
               strokeLinecap="round"
+              fill="none"
             />
           );
         })}
@@ -325,7 +327,7 @@ export function WorldLandscape({ worlds }: WorldLandscapeProps) {
           marginTop: 'var(--spacing-sm)',
         }}
       >
-        Scroll to explore →
+        Scroll to explore
       </p>
     </div>
   );
