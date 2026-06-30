@@ -69,7 +69,7 @@ import Link from 'next/link';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" className={ibmPlexSans.variable}>
+    <html lang="en" data-theme="dark" className={ibmPlexSans.variable} suppressHydrationWarning>
       <body>
         <ServiceWorkerRegister />
         <ThemeProvider>
