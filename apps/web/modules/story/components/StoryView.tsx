@@ -13,10 +13,11 @@ export function StoryView({ title, sections }: StoryViewProps) {
     <article>
       <h1
         style={{
-          fontSize: '2rem',
+          fontSize: 'clamp(1.8rem, 5vw, 2.5rem)',
           fontWeight: 700,
-          lineHeight: 1.2,
-          margin: '0 0 var(--spacing-lg)',
+          lineHeight: 1.15,
+          letterSpacing: '-0.02em',
+          margin: '0 0 var(--spacing-xl, 2.5rem)',
           color: 'var(--color-text)',
         }}
       >

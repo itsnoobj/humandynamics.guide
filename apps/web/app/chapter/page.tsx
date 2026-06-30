@@ -45,7 +45,13 @@ function ChapterPageInner() {
 
       <Link
         href={quizHref}
-        className="block w-full mt-8 py-3 text-center text-[var(--color-bg)] bg-[var(--color-text)] font-medium"
+        className="block w-full mt-8 py-3 text-center font-bold uppercase tracking-wider"
+        style={{
+          color: 'var(--color-bg)',
+          backgroundColor: 'var(--color-gold)',
+          fontSize: '0.95rem',
+          letterSpacing: '0.06em',
+        }}
       >
         Test Your Understanding →
       </Link>
