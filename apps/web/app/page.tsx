@@ -384,9 +384,7 @@ export default function LandingPage() {
           display: block;
         }
         @media (max-width: 600px) { .glimpse-card { min-width: 100% !important; } .glimpse-card svg { max-height: 55px !important; } .glimpse-card > div { padding: 0.4rem 0.6rem !important; } .click-hand { width: 18px !important; height: 18px !important; top: -8px !important; right: -8px !important; }
-        .click-hand-hide { display: none !important; }
-        .click-hand-show { display: block; border-radius: 4px; }
-        [data-theme="dark"] .click-hand-show { filter: invert(1); } } .glimpse-card:hover {
+         } .glimpse-card:hover {
           border-color: rgba(218, 165, 32, 0.4) !important;
           transform: translateY(-3px);
           box-shadow: 0 8px 24px rgba(218, 165, 32, 0.1);
