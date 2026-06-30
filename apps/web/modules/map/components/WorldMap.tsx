@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useProgressStore } from '@/store/progressStore';
 import { generateMapLayout, type LayoutRegion } from '../data/mapNodes';
 import { generateTerrain, generateBackdrop } from '../lib/terrain';
-import { usePannable } from '../hooks/usePannable';
 import { MapPath } from './MapPath';
 import { MapNode } from './MapNode';
 import { PlayerIndicator } from './PlayerIndicator';
@@ -95,20 +94,12 @@ export function WorldMap({
     generateTerrain(area.terrain, area.x, area.y, area.width, area.height),
   );
 
-  const { containerRef, handlers, offset, isDragging } = usePannable<HTMLDivElement>();
-
   return (
     <div>
       <div
-        ref={containerRef}
-        {...handlers}
         style={{
           position: 'relative',
           maxWidth: '100%',
-          overflow: 'hidden',
-          touchAction: 'none',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          WebkitOverflowScrolling: 'touch',
         }}
       >
         <svg
@@ -117,7 +108,6 @@ export function WorldMap({
           className="h-auto"
           style={{
             width: '100%',
-            transform: `translate(${offset.x}px, ${offset.y}px)`,
           }}
           role="img"
           aria-label={`World map with ${nodes.length} missions`}
@@ -219,18 +209,6 @@ export function WorldMap({
           />
         )}
       </div>
-
-      <p
-        className="md:hidden"
-        style={{
-          textAlign: 'center',
-          fontSize: '0.75rem',
-          color: 'var(--color-text-dim)',
-          marginTop: 'var(--spacing-sm)',
-        }}
-      >
-        Drag to explore ↔
-      </p>
     </div>
   );
 }

@@ -8,7 +8,6 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { usePannable } from '@/modules/map/hooks/usePannable';
 
 /** A region as rendered on the map. Mirrors the shape used by the hierarchy. */
 export interface RegionMapRegion {
@@ -407,7 +406,6 @@ export function RegionMap({
 }: RegionMapProps) {
   const router = useRouter();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const { containerRef, handlers, offset, isDragging } = usePannable<HTMLDivElement>();
 
   const positions = regionPositions(regions.length);
   const placed = regions.map((region, i) => ({
@@ -420,15 +418,9 @@ export function RegionMap({
   return (
     <div>
       <div
-        ref={containerRef}
-        {...handlers}
         style={{
           position: 'relative',
           maxWidth: '100%',
-          overflow: 'hidden',
-          touchAction: 'none',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          WebkitOverflowScrolling: 'touch',
         }}
       >
         <svg
@@ -438,7 +430,6 @@ export function RegionMap({
             width: '100%',
             height: 'auto',
             display: 'block',
-            transform: `translate(${offset.x}px, ${offset.y}px)`,
           }}
           role="img"
           aria-label={`Map of ${worldName} — choose a region to explore`}
@@ -525,18 +516,6 @@ export function RegionMap({
           />
         </svg>
       </div>
-
-      <p
-        className="md:hidden"
-        style={{
-          textAlign: 'center',
-          fontSize: '0.75rem',
-          color: 'var(--color-text-dim)',
-          marginTop: 'var(--spacing-sm)',
-        }}
-      >
-        Drag to explore ↔
-      </p>
     </div>
   );
 }
