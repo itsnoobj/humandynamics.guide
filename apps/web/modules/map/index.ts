@@ -15,4 +15,6 @@ export { PlayerIndicator } from './components/PlayerIndicator';
 export type { PlayerIndicatorProps } from './components/PlayerIndicator';
 
 export { generateMapLayout } from './data/mapNodes';
-export type { LayoutRegion, LayoutNode, LayoutEdge, RegionLabel, MapLayout } from './data/mapNodes';
+export type { LayoutRegion, LayoutNode, LayoutEdge, RegionArea, MapLayout } from './data/mapNodes';
+
+export { generateTerrain, generateBackdrop } from './lib/terrain';

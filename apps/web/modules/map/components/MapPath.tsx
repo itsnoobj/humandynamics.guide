@@ -1,6 +1,3 @@
-/** Status of the segment a {@link MapPath} represents. */
-export type MapPathStatus = 'done' | 'available' | 'locked';
-
 /** Props for {@link MapPath}. */
 export interface MapPathProps {
   /** Start x coordinate. */
@@ -13,22 +10,20 @@ export interface MapPathProps {
   y2: number;
   /** Whether the segment has been completed (drawn in the accent colour). */
   completed: boolean;
-  /** Whether the segment is locked (drawn in grey). */
-  locked?: boolean;
   /** Accent colour used for completed segments. Defaults to gold. */
   accent?: string;
-  /** Whether this is a region-to-region "gate" segment (drawn dashed wider). */
+  /** Whether this is a region-to-region "gate" segment (drawn with a wider dash). */
   isGate?: boolean;
 }
 
 const GOLD = '#DAA520';
 const WHITE = '#FFFFFF';
-const GREY = '#444444';
 
 /**
  * A dotted path segment connecting two level nodes, Super Mario World style.
- * Accent-coloured when completed, grey when locked, white otherwise. Gate
- * segments (between regions) use a longer dash to read as a transition.
+ * Accent-coloured when completed, white otherwise. Gate segments (between
+ * regions) use a longer dash to read as a transition. No locked state — every
+ * path is walkable.
  */
 export function MapPath({
   x1,
@@ -36,11 +31,10 @@ export function MapPath({
   x2,
   y2,
   completed,
-  locked = false,
   accent = GOLD,
   isGate = false,
 }: MapPathProps) {
-  const stroke = completed ? accent : locked ? GREY : WHITE;
+  const stroke = completed ? accent : WHITE;
 
   return (
     <line

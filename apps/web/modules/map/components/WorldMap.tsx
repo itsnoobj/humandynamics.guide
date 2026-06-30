@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useProgressStore } from '@/store/progressStore';
 import { generateMapLayout, type LayoutRegion } from '../data/mapNodes';
+import { generateTerrain, generateBackdrop } from '../lib/terrain';
 import { MapPath } from './MapPath';
 import { MapNode } from './MapNode';
 import { PlayerIndicator } from './PlayerIndicator';
@@ -10,7 +11,7 @@ import { PathUnlocked } from './PathUnlocked';
 
 /** Props for {@link WorldMap}. */
 export interface WorldMapProps {
-  /** The world's regions, each rendered as a labelled band of mission nodes. */
+  /** The world's regions, rendered as connected bands of mission nodes. */
   regions: LayoutRegion[];
   /** Accent colour used for completed paths, nodes, and the player indicator. */
   accent: string;
@@ -29,25 +30,30 @@ const GOLD = '#DAA520';
 /**
  * The Super Mario World style overworld map for a single world.
  *
- * Node positions, paths, and region labels are generated programmatically from
- * the world's {@link WorldMapProps.regions} via {@link generateMapLayout}, so
- * any region/mission shape renders without hand-placed coordinates. Each region
- * occupies a horizontal band with a title label; sequential missions are
- * connected, and "gate" segments bridge regions. Completed paths and nodes use
- * the world's {@link WorldMapProps.accent} colour. Clicking a non-locked node
- * navigates to its chapter.
+ * Node positions, paths, and region bands are generated programmatically from
+ * the world's {@link WorldMapProps.regions} via {@link generateMapLayout}.
+ * Behind the nodes sits a subtle hand-sketched landscape: ambient clouds,
+ * mountains, trees and stones, plus per-region terrain decorations chosen by
+ * each region's terrain hint. Regions are visual groupings only — they are not
+ * labelled. Every mission is reachable; the first uncompleted one pulses as a
+ * gentle recommendation. Clicking any node navigates to its chapter.
  */
 export function WorldMap({ regions, accent, showUnlocked, onUnlockedDone }: WorldMapProps) {
   const router = useRouter();
   const completedChapters = useProgressStore((state) => state.completedChapters);
 
-  const { nodes, edges, regionLabels, width, height } = generateMapLayout(
+  const { nodes, edges, regionAreas, width, height } = generateMapLayout(
     regions,
     completedChapters,
   );
 
-  const currentNode = nodes.find((node) => node.status === 'current');
+  const recommendedNode = nodes.find((node) => node.status === 'recommended');
   const accentColor = accent || GOLD;
+
+  const backdrop = generateBackdrop(width, height);
+  const terrain = regionAreas.flatMap((area) =>
+    generateTerrain(area.terrain, area.x, area.y, area.width, area.height),
+  );
 
   return (
     <div>
@@ -67,19 +73,12 @@ export function WorldMap({ regions, accent, showUnlocked, onUnlockedDone }: Worl
           role="img"
           aria-label={`World map with ${nodes.length} missions`}
         >
-          {regionLabels.map((label) => (
-            <text
-              key={label.id}
-              x={label.x}
-              y={label.y}
-              fontSize={14}
-              fontWeight={700}
-              fill={accentColor}
-              letterSpacing="0.05em"
-            >
-              {label.title.toUpperCase()}
-            </text>
-          ))}
+          {/* Dark canvas so the white-stroked landscape and nodes read clearly. */}
+          <rect x={0} y={0} width={width} height={height} fill="#16140f" rx={12} />
+
+          {/* Landscape backdrop, drawn first so it sits behind everything. */}
+          <g aria-hidden="true">{backdrop}</g>
+          <g aria-hidden="true">{terrain}</g>
 
           {edges.map((edge) => (
             <MapPath
@@ -89,7 +88,6 @@ export function WorldMap({ regions, accent, showUnlocked, onUnlockedDone }: Worl
               x2={edge.x2}
               y2={edge.y2}
               completed={edge.completed}
-              locked={edge.locked}
               isGate={edge.isGate}
               accent={accentColor}
             />
@@ -108,8 +106,8 @@ export function WorldMap({ regions, accent, showUnlocked, onUnlockedDone }: Worl
             />
           ))}
 
-          {currentNode && (
-            <PlayerIndicator x={currentNode.x} y={currentNode.y} accent={accentColor} />
+          {recommendedNode && (
+            <PlayerIndicator x={recommendedNode.x} y={recommendedNode.y} accent={accentColor} />
           )}
         </svg>
 

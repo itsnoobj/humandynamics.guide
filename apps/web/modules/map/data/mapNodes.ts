@@ -4,8 +4,10 @@ import type { MapNodeStatus } from '../components/MapNode';
 export interface LayoutRegion {
   /** Region id within its world (e.g. "A"). */
   id: string;
-  /** Region title, rendered as a band label. */
+  /** Region title (used for grouping; no longer rendered as a label). */
   title: string;
+  /** Visual terrain hint that drives background decorations. */
+  terrain?: string;
   /** Ordered mission ids placed along this region's horizontal band. */
   missions: string[];
 }
@@ -38,26 +40,33 @@ export interface LayoutEdge {
   y2: number;
   /** Both endpoints completed. */
   completed: boolean;
-  /** Destination still locked. */
-  locked: boolean;
   /** True when this segment bridges the last node of one region to the
    * first node of the next (a "gate" between regions). */
   isGate: boolean;
 }
 
-/** An SVG text label positioned above a region's band. */
-export interface RegionLabel {
+/** The bounding band of a region, used to place terrain decorations. */
+export interface RegionArea {
+  /** Region id. */
   id: string;
-  title: string;
+  /** Terrain hint that selects which decorations are drawn here. */
+  terrain?: string;
+  /** Left edge of the band. */
   x: number;
+  /** Top edge of the band. */
   y: number;
+  /** Band width. */
+  width: number;
+  /** Band height. */
+  height: number;
 }
 
 /** The full programmatic layout for a world's regions. */
 export interface MapLayout {
   nodes: LayoutNode[];
   edges: LayoutEdge[];
-  regionLabels: RegionLabel[];
+  /** Per-region bands, used to scatter terrain decorations behind nodes. */
+  regionAreas: RegionArea[];
   /** SVG viewBox width, sized to the widest region. */
   width: number;
   /** SVG viewBox height, sized to the number of regions. */
@@ -72,8 +81,6 @@ const BAND_HEIGHT = 150;
 const TOP_PADDING = 50;
 /** Vertical offset of a mission node from the top of its band. */
 const NODE_OFFSET_Y = 80;
-/** Vertical offset of a region label from the top of its band. */
-const LABEL_OFFSET_Y = 28;
 const MIN_WIDTH = 700;
 
 /**
@@ -83,37 +90,29 @@ const MIN_WIDTH = 700;
  * right along that band. Sequential missions within a region are connected,
  * and a "gate" segment links the last mission of one region to the first of
  * the next. Node status is derived from `completedMissions`: completed nodes
- * are `done`, the first uncompleted node (in flat order) is `current`, and the
- * rest are `locked`.
+ * are `done`, the first uncompleted node (in flat order) is `recommended`, and
+ * every other node is `available`. Nothing is ever locked.
  */
 export function generateMapLayout(regions: LayoutRegion[], completedMissions: string[]): MapLayout {
   const completed = new Set(completedMissions);
-  let currentAssigned = false;
+  let recommendedAssigned = false;
 
   const statusFor = (missionId: string): MapNodeStatus => {
     if (completed.has(missionId)) return 'done';
-    if (!currentAssigned) {
-      currentAssigned = true;
-      return 'current';
+    if (!recommendedAssigned) {
+      recommendedAssigned = true;
+      return 'recommended';
     }
-    return 'locked';
+    return 'available';
   };
 
   const nodes: LayoutNode[] = [];
-  const regionLabels: RegionLabel[] = [];
   // Track the first/last node of each region so we can wire gate edges.
   const regionEndpoints: Array<{ first?: LayoutNode; last?: LayoutNode }> = [];
 
   regions.forEach((region, regionIndex) => {
     const bandTop = TOP_PADDING + regionIndex * BAND_HEIGHT;
     const nodeY = bandTop + NODE_OFFSET_Y;
-
-    regionLabels.push({
-      id: region.id,
-      title: region.title,
-      x: MARGIN_X,
-      y: bandTop + LABEL_OFFSET_Y,
-    });
 
     const endpoints: { first?: LayoutNode; last?: LayoutNode } = {};
 
@@ -146,7 +145,6 @@ export function generateMapLayout(regions: LayoutRegion[], completedMissions: st
       x2: to.x,
       y2: to.y,
       completed: from.status === 'done' && to.status === 'done',
-      locked: to.status === 'locked',
       isGate,
     });
   };
@@ -171,5 +169,15 @@ export function generateMapLayout(regions: LayoutRegion[], completedMissions: st
   const width = Math.max(MIN_WIDTH, MARGIN_X * 2 + Math.max(0, maxMissions - 1) * SPACING_X);
   const height = TOP_PADDING + regions.length * BAND_HEIGHT;
 
-  return { nodes, edges, regionLabels, width, height };
+  // One band per region, spanning the full map width, for terrain placement.
+  const regionAreas: RegionArea[] = regions.map((region, regionIndex) => ({
+    id: region.id,
+    terrain: region.terrain,
+    x: 0,
+    y: TOP_PADDING + regionIndex * BAND_HEIGHT,
+    width,
+    height: BAND_HEIGHT,
+  }));
+
+  return { nodes, edges, regionAreas, width, height };
 }

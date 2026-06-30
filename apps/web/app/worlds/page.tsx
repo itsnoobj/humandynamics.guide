@@ -1,10 +1,11 @@
-import { WorldGrid } from '@/modules/worlds';
+import { WorldLandscape } from '@/modules/worlds';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
 import { worlds } from '@/lib/hierarchy';
 
 /**
- * World-select screen: the top-level entry point. Lists all worlds as a grid
- * of cards, with locking and progress derived from the persisted store.
+ * World-select screen: the top-level entry point. Renders all worlds as a
+ * zoomed-out landscape map where each world is a terrain zone. Every world is
+ * always selectable; progress is derived from the persisted store.
  */
 export default function WorldsPage() {
   return (
@@ -16,17 +17,17 @@ export default function WorldsPage() {
       }}
     >
       <ThemeToggle />
-      <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
+      <div style={{ maxWidth: '1040px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
         <header style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0 }}>
             A Field Guide to Being Human
           </h1>
           <p style={{ fontSize: '0.9rem', color: 'var(--color-text-dim)', marginTop: '0.25rem' }}>
-            Select a World
+            Choose a world
           </p>
         </header>
 
-        <WorldGrid worlds={worlds} />
+        <WorldLandscape worlds={worlds} />
       </div>
     </main>
   );

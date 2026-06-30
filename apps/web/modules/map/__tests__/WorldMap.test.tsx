@@ -12,15 +12,21 @@ vi.mock('next/navigation', () => ({
 }));
 
 // useProgressStore reads completedChapters via a selector; return a fixed set
-// so the first three nodes are "done", the fourth "current", the rest "locked".
+// so the first three nodes are "done", the fourth "recommended", the rest
+// "available".
 vi.mock('@/store/progressStore', () => ({
   useProgressStore: (selector: (state: { completedChapters: string[] }) => unknown) =>
     selector({ completedChapters: ['26', '27', '28'] }),
 }));
 
 const REGIONS: LayoutRegion[] = [
-  { id: 'A', title: 'Incentives', missions: ['26', '27', '28', '29', '30'] },
-  { id: 'B', title: 'Trust', missions: ['34', '35'] },
+  {
+    id: 'A',
+    title: 'Incentives',
+    terrain: 'market-stalls',
+    missions: ['26', '27', '28', '29', '30'],
+  },
+  { id: 'B', title: 'Trust', terrain: 'bridge', missions: ['34', '35'] },
 ];
 
 describe('WorldMap', () => {
@@ -31,14 +37,15 @@ describe('WorldMap', () => {
 
   it('renders one node per mission across all regions (7)', () => {
     const { container } = render(<WorldMap regions={REGIONS} accent="#DAA520" />);
-    // Every MapNode renders a <g> with an aria-label (interactive or locked).
+    // Every MapNode renders a <g> with an aria-label; terrain groups are
+    // aria-hidden and carry no label, so this counts mission nodes only.
     expect(container.querySelectorAll('g[aria-label]')).toHaveLength(7);
   });
 
-  it('renders a label for each region', () => {
+  it('does not render region labels (regions are visual groupings only)', () => {
     render(<WorldMap regions={REGIONS} accent="#DAA520" />);
-    expect(screen.getByText('INCENTIVES')).toBeInTheDocument();
-    expect(screen.getByText('TRUST')).toBeInTheDocument();
+    expect(screen.queryByText('INCENTIVES')).not.toBeInTheDocument();
+    expect(screen.queryByText('TRUST')).not.toBeInTheDocument();
   });
 
   it('renders the MapHeader title', () => {

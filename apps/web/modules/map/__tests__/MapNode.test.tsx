@@ -21,25 +21,34 @@ describe('MapNode', () => {
     expect(screen.queryByText('4')).not.toBeInTheDocument();
   });
 
-  it('renders the number when status is current', () => {
-    renderNode({ ...BASE, status: 'current' });
+  it('renders the number when status is available', () => {
+    renderNode({ ...BASE, status: 'available' });
     expect(screen.getByText('4')).toBeInTheDocument();
     expect(screen.queryByText('★')).not.toBeInTheDocument();
   });
 
-  it('invokes onClick for a non-locked node', () => {
+  it('renders the number when status is recommended', () => {
+    renderNode({ ...BASE, status: 'recommended' });
+    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.queryByText('★')).not.toBeInTheDocument();
+  });
+
+  it('invokes onClick for an available node', () => {
     const onClick = vi.fn();
-    renderNode({ ...BASE, status: 'current', onClick });
+    renderNode({ ...BASE, status: 'available', onClick });
     fireEvent.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
-  it('does not invoke onClick for a locked node', () => {
+  it('invokes onClick for a recommended node', () => {
     const onClick = vi.fn();
-    renderNode({ ...BASE, status: 'locked', onClick });
-    // Locked nodes expose no button role; click the rendered label instead.
-    fireEvent.click(screen.getByText('Resisting Change'));
-    expect(onClick).not.toHaveBeenCalled();
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    renderNode({ ...BASE, status: 'recommended', onClick });
+    fireEvent.click(screen.getByRole('button'));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('exposes a button role for every node (nothing is locked)', () => {
+    renderNode({ ...BASE, status: 'available' });
+    expect(screen.getByRole('button')).toBeInTheDocument();
   });
 });
