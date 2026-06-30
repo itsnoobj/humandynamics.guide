@@ -64,7 +64,7 @@ function loadSW() {
   // Load the SW code by reading and eval-ing it
   const fs = require('fs');
   const path = require('path');
-  const code = fs.readFileSync(path.resolve(__dirname, '../../public/sw.js'), 'utf-8');
+  const code = fs.readFileSync(path.resolve(__dirname, './sw.js'), 'utf-8');
   eval(code);
 }
 

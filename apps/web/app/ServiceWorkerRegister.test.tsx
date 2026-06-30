@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from '@testing-library/react';
-import { ServiceWorkerRegister } from '../ServiceWorkerRegister';
+import { ServiceWorkerRegister } from './ServiceWorkerRegister';
 
 describe('ServiceWorkerRegister', () => {
   let addEventListenerSpy: ReturnType<typeof vi.spyOn>;
