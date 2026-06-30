@@ -2,18 +2,22 @@
 
 import Link from 'next/link';
 
-interface ChapterLockedProps {
-  id: string;
-  world?: string;
-  region?: string;
+interface MissionLockedProps {
+  /** Owning world id (route param). */
+  worldId: string;
+  /** Owning region id (route param). */
+  regionId: string;
+  /** Mission id (route param). */
+  missionId: string;
 }
 
 /**
- * Shown when a chapter doesn't have content yet. Friendly "coming soon"
- * instead of a harsh 404.
+ * Shown when a mission doesn't have content yet. Friendly "coming soon"
+ * instead of a harsh 404. The back link returns to the owning region map,
+ * derived from the URL path.
  */
-export function ChapterLocked({ id, world, region }: ChapterLockedProps) {
-  const backHref = world && region ? `/worlds/${world}/region/${region}` : '/worlds';
+export function MissionLocked({ worldId, regionId, missionId }: MissionLockedProps) {
+  const backHref = `/worlds/${worldId}/region/${regionId}`;
 
   return (
     <main
@@ -31,7 +35,7 @@ export function ChapterLocked({ id, world, region }: ChapterLockedProps) {
     >
       <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-        Chapter {id}
+        Chapter {missionId}
       </h1>
       <p
         style={{

@@ -84,13 +84,15 @@ export function WorldMap({
   const recommendedNode = nodes.find((node) => node.status === 'recommended');
   const accentColor = accent || GOLD;
 
-  // Clicking a mission opens its chapter at `/chapter/{missionId}`. When we
-  // know the world/region we carry them through so the result screen can route
-  // back to this map.
+  // Clicking a mission opens its chapter at the hierarchical mission route,
+  // `/worlds/{worldId}/region/{regionId}/mission/{missionId}`. The world/region
+  // are encoded in the path, so back/result navigation flows naturally from the
+  // URL. When we don't know the region (defensive), fall back to the legacy
+  // `/chapter/{missionId}` route, which redirects to the right place.
   const targetRegionId = regionId ?? region?.id;
   const missionHref = (missionId: string) =>
     worldId != null && targetRegionId != null
-      ? `/chapter/${missionId}?from=map&world=${worldId}&region=${targetRegionId}`
+      ? `/worlds/${worldId}/region/${targetRegionId}/mission/${missionId}`
       : `/chapter/${missionId}`;
 
   const backdrop = generateBackdrop(width, height);

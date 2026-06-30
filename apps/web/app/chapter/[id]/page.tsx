@@ -1,19 +1,17 @@
-import { loadChapter, listChapterIds } from '@/lib/content';
-import { worlds, findChapterLocation } from '@/lib/hierarchy';
-import { ChapterClient } from './ChapterClient';
-import { ChapterLocked } from './ChapterLocked';
+import { listChapterIds } from '@/lib/content';
+import { worlds } from '@/lib/hierarchy';
 
-/** Route params for the dynamic chapter page. */
-interface ChapterPageProps {
+import { ChapterRedirect } from './ChapterRedirect';
+
+/** Route params for the legacy chapter redirect. */
+interface LegacyChapterPageProps {
   params: Promise<{ id: string }>;
 }
 
 /**
- * Pre-render every chapter page for static export.
- *
- * Includes both ids that already have content and every mission id listed in
- * the hierarchy, so locked/unauthored chapters still render the friendly
- * "coming soon" {@link ChapterLocked} state instead of a hard 404.
+ * Pre-render the legacy redirect for every chapter id that existed under the
+ * old flat route — both authored content ids and every mission id in the
+ * hierarchy — so old bookmarks and deep links keep resolving.
  */
 export async function generateStaticParams() {
   const contentIds = await listChapterIds();
@@ -25,28 +23,14 @@ export async function generateStaticParams() {
 }
 
 /**
- * Dynamic chapter page: `/chapter/{id}`.
+ * Legacy chapter route: `/chapter/{id}`.
  *
- * A server component that loads the chapter JSON for `id` (scanning the
- * repo-root `content/chapters/part-*` directories) and hands the data to the
- * {@link ChapterClient} for rendering. If the chapter doesn't exist yet,
- * shows a "Coming Soon" locked state instead of a 404, deriving the back link
- * from the chapter's place in the world/region hierarchy.
+ * The chapter page now lives at the hierarchical
+ * `/worlds/{worldId}/region/{regionId}/mission/{id}` route. This server wrapper
+ * pre-renders a static page that hands the id to {@link ChapterRedirect}, a
+ * client component that looks up the chapter's world/region and redirects.
  */
-export default async function ChapterPage({ params }: ChapterPageProps) {
+export default async function LegacyChapterPage({ params }: LegacyChapterPageProps) {
   const { id } = await params;
-  const chapter = await loadChapter(id);
-
-  if (!chapter) {
-    const location = findChapterLocation(id);
-    return (
-      <ChapterLocked
-        id={id}
-        world={location ? String(location.worldId) : undefined}
-        region={location?.regionId}
-      />
-    );
-  }
-
-  return <ChapterClient chapter={chapter} />;
+  return <ChapterRedirect id={id} />;
 }

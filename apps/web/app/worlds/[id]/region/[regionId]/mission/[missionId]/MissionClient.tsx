@@ -7,26 +7,28 @@ import { useSearchParams } from 'next/navigation';
 import { ChapterVisual, AudioPlayer, StoryView } from '@/modules/story';
 import type { LoadedChapter } from '@/lib/content';
 
-/** Props for {@link ChapterClient}. */
-export interface ChapterClientProps {
-  /** The chapter to render, loaded on the server by id. */
+/** Props for {@link MissionClient}. */
+export interface MissionClientProps {
+  /** The chapter to render, loaded on the server by mission id. */
   chapter: LoadedChapter;
+  /** Owning world id (route param). */
+  worldId: string;
+  /** Owning region id (route param). */
+  regionId: string;
+  /** Mission id (route param) — same value as the chapter/quiz id. */
+  missionId: string;
 }
 
-function ChapterClientInner({ chapter }: ChapterClientProps) {
+function MissionClientInner({ chapter, worldId, regionId, missionId }: MissionClientProps) {
   const searchParams = useSearchParams();
   const fromGame = searchParams.get('from') === 'game';
-  const world = searchParams.get('world');
-  const region = searchParams.get('region');
 
-  // The quiz lives at the same id as the chapter; carry the game context
-  // through so the quiz → result flow can route back into the game.
-  const quizHref = fromGame ? `/quiz/${chapter.id}?from=game` : `/quiz/${chapter.id}`;
-  const backHref = fromGame
-    ? '/game?resume=1'
-    : world && region
-      ? `/worlds/${world}/region/${region}`
-      : '/map';
+  const base = `/worlds/${worldId}/region/${regionId}/mission/${missionId}`;
+
+  // The quiz lives directly under the mission; carry the game context through
+  // so the quiz → result flow can route back into the game.
+  const quizHref = fromGame ? `${base}/quiz?from=game` : `${base}/quiz`;
+  const backHref = fromGame ? '/game?resume=1' : `/worlds/${worldId}/region/${regionId}`;
   const backLabel = fromGame ? '← Game' : '← Map';
 
   return (
@@ -69,14 +71,15 @@ function ChapterClientInner({ chapter }: ChapterClientProps) {
 }
 
 /**
- * Client shell for a chapter page. Receives server-loaded {@link LoadedChapter}
- * data as a prop and layers on the interactive bits (query-param-driven back
- * and quiz links). Wrapped in Suspense because it reads search params.
+ * Client shell for a mission page. Receives server-loaded {@link LoadedChapter}
+ * data plus the world/region/mission ids from the route, and layers on the
+ * interactive bits (game-aware back link, quiz link). Wrapped in Suspense
+ * because it reads the `from` search param.
  */
-export function ChapterClient({ chapter }: ChapterClientProps) {
+export function MissionClient(props: MissionClientProps) {
   return (
     <Suspense fallback={null}>
-      <ChapterClientInner chapter={chapter} />
+      <MissionClientInner {...props} />
     </Suspense>
   );
 }

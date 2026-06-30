@@ -1,43 +1,36 @@
-import { loadChapter, loadQuiz, listQuizIds } from '@/lib/content';
-import { QuizClient } from './QuizClient';
+import { listQuizIds } from '@/lib/content';
+import { worlds } from '@/lib/hierarchy';
 
-/** Route params for the dynamic quiz page. */
-interface QuizPageProps {
+import { QuizRedirect } from './QuizRedirect';
+
+/** Route params for the legacy quiz redirect. */
+interface LegacyQuizPageProps {
   params: Promise<{ id: string }>;
 }
 
 /**
- * Pre-render a quiz page for every chapter that has a `{id}.quiz.json` file,
- * so static export can emit each `/quiz/{id}` route.
+ * Pre-render the legacy redirect for every quiz id that existed under the old
+ * flat route — both authored quiz ids and every mission id in the hierarchy —
+ * so old bookmarks and deep links keep resolving.
  */
 export async function generateStaticParams() {
-  const ids = await listQuizIds();
+  const quizIds = await listQuizIds();
+  const missionIds = worlds.flatMap((world) =>
+    world.regions.flatMap((region) => region.missions),
+  );
+  const ids = Array.from(new Set([...quizIds, ...missionIds]));
   return ids.map((id) => ({ id }));
 }
 
 /**
- * Dynamic quiz page: `/quiz/{id}`.
+ * Legacy quiz route: `/quiz/{id}`.
  *
- * A server component that loads the quiz JSON for `id` (and the chapter, for
- * its title) by scanning the repo-root `content/chapters/part-*` directories,
- * then hands the data to the {@link QuizClient}. Unknown ids render the 404
- * page.
+ * The quiz page now lives at the hierarchical
+ * `/worlds/{worldId}/region/{regionId}/mission/{id}/quiz` route. This server
+ * wrapper pre-renders a static page that hands the id to {@link QuizRedirect},
+ * a client component that looks up the chapter's world/region and redirects.
  */
-export default async function QuizPage({ params }: QuizPageProps) {
+export default async function LegacyQuizPage({ params }: LegacyQuizPageProps) {
   const { id } = await params;
-  const [quiz, chapter] = await Promise.all([loadQuiz(id), loadChapter(id)]);
-
-  if (!quiz) {
-    const { redirect } = await import('next/navigation');
-    redirect(`/chapter/${id}`);
-    return null; // unreachable, but satisfies TS narrowing
-  }
-
-  return (
-    <QuizClient
-      chapterId={quiz.chapterId ?? id}
-      chapterTitle={chapter?.title ?? `Chapter ${id}`}
-      challenges={quiz.challenges}
-    />
-  );
+  return <QuizRedirect id={id} />;
 }

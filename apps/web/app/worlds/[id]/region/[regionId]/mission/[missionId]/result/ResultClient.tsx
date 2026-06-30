@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { PrincipleReveal, ReflectionPrompt, ResultCTA } from '@/modules/result';
 import { useProgressStore } from '@/store/progressStore';
 
-/** Pre-computed result data for a single chapter, built at static-export time. */
+/** Pre-computed result data for a single mission, built at static-export time. */
 export interface ResultData {
   /** Chapter title shown alongside the achievement. */
   chapterTitle: string;
@@ -18,29 +18,30 @@ export interface ResultData {
   reflection: string;
   /** Total challenge count, used for the "n/n correct" badge. */
   totalCount: number;
-  /** Region map route to return to (derived from the chapter's hierarchy). */
+  /** Region map route to return to (derived from the URL path). */
   mapHref: string;
 }
 
 /** Props for {@link ResultClient}, supplied by the server component. */
 export interface ResultClientProps {
-  /** Result data for every chapter, keyed by chapter id. */
-  results: Record<string, ResultData>;
+  /** Result data for this mission, or `null` when the mission has no quiz. */
+  data: ResultData | null;
+  /** Mission/chapter id, used to mark progress on completion. */
+  chapterId: string;
+  /** Region map route to return to (derived from the URL path). */
+  mapHref: string;
 }
 
-function ResultClientInner({ results }: ResultClientProps) {
+function ResultClientInner({ data, chapterId, mapHref }: ResultClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const chapterId = searchParams.get('chapter') ?? '';
   const fromGame = searchParams.get('from') === 'game';
   const completeChapter = useProgressStore((state) => state.completeChapter);
-
-  const data = chapterId ? results[chapterId] : undefined;
 
   // Reaching the result screen means the quiz is complete: mark the chapter
   // done so the world map updates the node to 'done' on return.
   useEffect(() => {
-    if (chapterId && data) {
+    if (data) {
       completeChapter(chapterId);
     }
   }, [completeChapter, chapterId, data]);
@@ -61,13 +62,13 @@ function ResultClientInner({ results }: ResultClientProps) {
     } else {
       // Signal the region map to celebrate the path that just opened up.
       localStorage.setItem('pathUnlocked', 'true');
-      router.push(data.mapHref);
+      router.push(mapHref);
     }
   };
 
   const handleGoToMap = () => {
     localStorage.setItem('pathUnlocked', 'true');
-    router.push(data.mapHref);
+    router.push(mapHref);
   };
   const handleGoToGame = () => router.push('/game');
 
@@ -98,10 +99,10 @@ function ResultClientInner({ results }: ResultClientProps) {
 }
 
 /**
- * Client shell for the result screen. Receives the build-time result data map
- * as props, reads the `chapter` (and `from`) query params from the URL, and
- * handles the interactive completion flow (progress store + routing). Wrapped
- * in Suspense because it reads search params.
+ * Client shell for the result screen. Receives the build-time result data for
+ * this mission as props, reads the `from` query param from the URL, and handles
+ * the interactive completion flow (progress store + routing). Wrapped in
+ * Suspense because it reads search params.
  */
 export function ResultClient(props: ResultClientProps) {
   return (

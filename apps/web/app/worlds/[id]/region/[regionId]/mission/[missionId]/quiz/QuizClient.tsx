@@ -8,25 +8,35 @@ import type { QuizChallenge } from '@field-guide/shared-types';
 
 /** Props for {@link QuizClient}. */
 export interface QuizClientProps {
-  /** Chapter id this quiz belongs to (used in the header). */
-  chapterId: string;
   /** Chapter title shown as the challenge context header. */
   chapterTitle: string;
   /** The quiz challenges to present. */
   challenges: QuizChallenge[];
+  /** Owning world id (route param). */
+  worldId: string;
+  /** Owning region id (route param). */
+  regionId: string;
+  /** Mission id (route param) — same value as the chapter/quiz id. */
+  missionId: string;
 }
 
-function QuizClientInner({ chapterId, chapterTitle, challenges }: QuizClientProps) {
+function QuizClientInner({
+  chapterTitle,
+  challenges,
+  worldId,
+  regionId,
+  missionId,
+}: QuizClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fromGame = searchParams.get('from') === 'game';
 
   const handleComplete = (score: number) => {
+    const base = `/worlds/${worldId}/region/${regionId}/mission/${missionId}/result`;
     const params = new URLSearchParams();
-    params.set('chapter', chapterId);
-    if (fromGame) params.set('from', 'game');
     params.set('score', String(score));
-    router.push(`/result?${params.toString()}`);
+    if (fromGame) params.set('from', 'game');
+    router.push(`${base}?${params.toString()}`);
   };
 
   return (
@@ -49,7 +59,7 @@ function QuizClientInner({ chapterId, chapterTitle, challenges }: QuizClientProp
           ← Story
         </button>
         <span className="ml-auto text-xs" style={{ color: 'var(--color-text-dim)' }}>
-          Chapter {chapterId}
+          Chapter {missionId}
         </span>
       </nav>
 
@@ -96,9 +106,10 @@ function QuizClientInner({ chapterId, chapterTitle, challenges }: QuizClientProp
 }
 
 /**
- * Client shell for a quiz page. Receives server-loaded quiz data as props and
- * handles the interactive completion flow (routing to `/result`). Wrapped in
- * Suspense because it reads search params.
+ * Client shell for a quiz page. Receives server-loaded quiz data plus the
+ * world/region/mission ids from the route, and handles the interactive
+ * completion flow (routing to the sibling `result` page). Wrapped in Suspense
+ * because it reads the `from` search param.
  */
 export function QuizClient(props: QuizClientProps) {
   return (
