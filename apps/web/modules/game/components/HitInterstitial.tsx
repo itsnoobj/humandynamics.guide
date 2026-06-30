@@ -566,16 +566,11 @@ export function HitInterstitial({ title, situation, onContinue, chapterId }: Hit
     if (proceed === false) return;
 
     // The game doesn't track world/region, so look up where this chapter lives
-    // in the hierarchy and build the full mission URL. Fall back to the legacy
-    // `/chapter/{id}` redirect when the chapter isn't placed in any region.
+    // in the hierarchy and build the full mission URL.
     const location = chapterId ? findChapterLocation(chapterId) : null;
-    const target =
-      chapterId && location
-        ? `/worlds/${location.worldId}/region/${location.regionId}/mission/${chapterId}`
-        : chapterId
-          ? `/chapter/${chapterId}`
-          : '/chapter';
-    router.push(`${target}?from=game`);
+    if (chapterId && location) {
+      router.push(`/worlds/${location.worldId}/region/${location.regionId}/mission/${chapterId}?from=game`);
+    }
   };
 
   return (
