@@ -106,19 +106,23 @@ export default function LandingPage() {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.75rem',
+            gap: '1rem',
             marginTop: '3rem',
-            maxWidth: '320px',
+            maxWidth: '360px',
             marginLeft: 'auto',
             marginRight: 'auto',
           }}
         >
+          {/* Map CTA — exploration vibe */}
           <Link
             href="/worlds"
             className="cta-primary"
             style={{
-              display: 'block',
-              padding: '0.9rem 1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              padding: '1rem 1.5rem',
               background: 'var(--color-gold)',
               color: '#1A1A1A',
               textDecoration: 'none',
@@ -129,14 +133,32 @@ export default function LandingPage() {
               transition: 'transform 0.2s ease, box-shadow 0.2s ease',
             }}
           >
-            Begin Your Journey →
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            >
+              <circle cx="10" cy="10" r="8" />
+              <path d="M10 2v16M2 10h16M4 4l12 12M16 4L4 16" opacity="0.4" />
+              <path d="M10 6l-2 4 4 0-2 4" strokeWidth="2" />
+            </svg>
+            Begin Your Journey
           </Link>
+
+          {/* Game CTA — action/runner vibe */}
           <Link
             href="/game"
             className="cta-secondary"
             style={{
-              display: 'block',
-              padding: '0.9rem 1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              padding: '1rem 1.5rem',
               background: 'transparent',
               color: 'var(--color-text)',
               textDecoration: 'none',
@@ -145,10 +167,27 @@ export default function LandingPage() {
               border: '1px solid var(--color-border)',
               textAlign: 'center',
               borderRadius: 'var(--radius)',
-              transition: 'border-color 0.2s ease, color 0.2s ease',
+              transition: 'border-color 0.2s ease, color 0.2s ease, transform 0.2s ease',
             }}
           >
-            Jump Straight In →
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            >
+              <circle cx="12" cy="4" r="2" />
+              <path d="M8 8l4-1 2 3" />
+              <path d="M12 10l-3 4" />
+              <path d="M9 14l-2 4" />
+              <path d="M12 10l2 4" />
+              <path d="M14 14l1 4" />
+              <path d="M8 8l-3 1" />
+            </svg>
+            Jump Straight In
           </Link>
         </div>
       </div>
