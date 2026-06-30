@@ -3,9 +3,10 @@
 import { Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { RegionList } from '@/modules/worlds';
+import { RegionMap } from '@/modules/worlds';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
 import { getWorld } from '@/lib/hierarchy';
+import { useProgressStore } from '@/store/progressStore';
 
 /** A representative emoji per world, keyed by the world's numeric id. */
 const WORLD_EMOJI: Record<number, string> = {
@@ -25,6 +26,7 @@ function WorldPageInner() {
   const params = useParams();
   const rawId = Array.isArray(params.id) ? params.id[0] : params.id;
   const world = getWorld(rawId ?? '');
+  const completedChapters = useProgressStore((state) => state.completedChapters);
 
   if (!world) {
     return (
@@ -59,7 +61,7 @@ function WorldPageInner() {
       }}
     >
       <ThemeToggle />
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
+      <div style={{ maxWidth: '880px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
         <Link href="/worlds" style={{ color: 'var(--color-text)', fontSize: '0.9rem' }}>
           ← Worlds
         </Link>
@@ -77,7 +79,13 @@ function WorldPageInner() {
         </header>
 
         {hasContent ? (
-          <RegionList worldId={world.id} regions={world.regions} accent={world.accent} />
+          <RegionMap
+            worldId={world.id}
+            worldName={world.worldName}
+            accent={world.accent}
+            regions={world.regions}
+            completedMissions={new Set(completedChapters)}
+          />
         ) : (
           <p style={{ textAlign: 'center', color: 'var(--color-text-dim)' }}>
             This world is still being charted. Check back soon.
@@ -90,8 +98,9 @@ function WorldPageInner() {
 
 /**
  * Region-selection screen for a world (level 2 of the navigation hierarchy).
- * Reads the world id from the route, then lists the world's regions as cards.
- * Selecting a region drills into its mission map at
+ * Reads the world id from the route, then renders the world's regions as a
+ * navigable SVG map of zones connected by squiggly roads. Selecting a region
+ * drills into its mission map at
  * `/worlds/[id]/region/[regionId]`.
  */
 export default function WorldPage() {
