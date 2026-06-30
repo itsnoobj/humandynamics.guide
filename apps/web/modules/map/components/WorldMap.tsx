@@ -116,7 +116,6 @@ export function WorldMap({
           preserveAspectRatio="xMidYMid meet"
           className="h-auto"
           style={{
-            minWidth: `${width}px`,
             width: '100%',
             transform: `translate(${offset.x}px, ${offset.y}px)`,
           }}

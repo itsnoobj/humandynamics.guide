@@ -39,13 +39,13 @@ describe('generateMapLayout', () => {
     expect(gate?.key).toBe('28-34');
   });
 
-  it('places each region on its own horizontal band', () => {
+  it('places each region on its own vertical band (scrolls down)', () => {
     const { nodes } = generateMapLayout(REGIONS, []);
     const regionAY = nodes.find((n) => n.id === '26')!.y;
     const regionBY = nodes.find((n) => n.id === '34')!.y;
     expect(regionBY).toBeGreaterThan(regionAY);
-    // Missions within a region share the same y.
-    expect(nodes.find((n) => n.id === '27')!.y).toBe(regionAY);
+    // Missions within a region have different y values (vertical layout).
+    expect(nodes.find((n) => n.id === '27')!.y).toBeGreaterThan(regionAY);
   });
 
   it('exposes one terrain-carrying region area per region', () => {
@@ -85,20 +85,20 @@ describe('generateMapLayout — single region (serpentine)', () => {
     expect(edges.every((e) => !e.isGate)).toBe(true);
   });
 
-  it('snakes across multiple rows (not a single horizontal band)', () => {
+  it('arranges missions vertically (each on its own row)', () => {
     const { nodes } = generateMapLayout(SINGLE, []);
     const distinctRows = new Set(nodes.map((n) => n.y));
-    // 6 missions at 4 columns => 2 rows.
-    expect(distinctRows.size).toBe(2);
+    // 6 missions => 6 distinct y values (one per row in vertical layout).
+    expect(distinctRows.size).toBe(6);
   });
 
-  it('reverses x direction on alternating rows (boustrophedon)', () => {
+  it('alternates x position left/right (serpentine vertical)', () => {
     const { nodes } = generateMapLayout(SINGLE, []);
-    // Row 0 (first 4) runs left → right; the 5th node (row 1) starts from the
-    // right, so its x should match the 4th node's x (rightmost column).
-    expect(nodes[4].x).toBe(nodes[3].x);
-    // And the 6th node sits left of the 5th as the row snakes back.
-    expect(nodes[5].x).toBeLessThan(nodes[4].x);
+    // Even-indexed nodes go left, odd-indexed go right.
+    expect(nodes[0].x).toBeLessThan(nodes[1].x);
+    expect(nodes[2].x).toBeLessThan(nodes[1].x);
+    expect(nodes[2].x).toBe(nodes[0].x);
+    expect(nodes[3].x).toBe(nodes[1].x);
   });
 
   it('exposes a single full-canvas region area carrying terrain and emoji', () => {

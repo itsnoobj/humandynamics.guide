@@ -87,15 +87,16 @@ export interface MapLayout {
 
 // Layout constants, tuned for a Super Mario World style overworld. Coordinates
 // are generated rather than hand-placed so any region/mission shape works.
-const MARGIN_X = 90;
-const SPACING_X = 130;
-const BAND_HEIGHT = 150;
+const MARGIN_Y = 60;
+const SPACING_Y = 150;
+const BAND_WIDTH = 500;
 const TOP_PADDING = 50;
-/** Vertical offset of a mission node from the top of its band. */
-const NODE_OFFSET_Y = 80;
-const MIN_WIDTH = 700;
-/** Max missions per row in the single-region serpentine layout. */
-const SERPENTINE_COLS = 4;
+/** Horizontal offset of a mission node — alternates left/right for serpentine. */
+const NODE_OFFSET_LEFT = 150;
+const NODE_OFFSET_RIGHT = 350;
+const MIN_WIDTH = 500;
+/** Max missions per column in the single-region serpentine layout. */
+const SERPENTINE_COLS = 1; // vertical: 1 per row
 
 /**
  * Lays out a single region's missions in a serpentine (boustrophedon) pattern:
@@ -110,22 +111,20 @@ function generateSerpentineLayout(
   statusFor: (missionId: string) => MapNodeStatus,
 ): MapLayout {
   const missions = region.missions;
-  const cols = Math.max(1, Math.min(SERPENTINE_COLS, missions.length || 1));
-  const rows = Math.max(1, Math.ceil(missions.length / cols));
+  const rows = missions.length;
 
-  const width = Math.max(MIN_WIDTH, MARGIN_X * 2 + (cols - 1) * SPACING_X);
-  const height = TOP_PADDING + rows * BAND_HEIGHT;
+  const width = MIN_WIDTH;
+  const height = TOP_PADDING + rows * SPACING_Y + MARGIN_Y;
 
   const nodes: LayoutNode[] = missions.map((missionId, index) => {
-    const row = Math.floor(index / cols);
-    const colInRow = index % cols;
-    // Reverse the column order on odd rows so the path snakes back and forth.
-    const col = row % 2 === 0 ? colInRow : cols - 1 - colInRow;
+    // Alternate left/right for serpentine vertical layout
+    const x = index % 2 === 0 ? NODE_OFFSET_LEFT : NODE_OFFSET_RIGHT;
+    const y = TOP_PADDING + MARGIN_Y + index * SPACING_Y;
 
     return {
       id: missionId,
-      x: MARGIN_X + col * SPACING_X,
-      y: TOP_PADDING + row * BAND_HEIGHT + NODE_OFFSET_Y,
+      x,
+      y,
       label: Number.parseInt(missionId, 10) || index + 1,
       title: getMissionTitle(missionId),
       regionId: region.id,
@@ -156,7 +155,7 @@ function generateSerpentineLayout(
       x: 0,
       y: TOP_PADDING,
       width,
-      height: rows * BAND_HEIGHT,
+      height: rows * SPACING_Y + MARGIN_Y,
     },
   ];
 
@@ -197,16 +196,16 @@ export function generateMapLayout(regions: LayoutRegion[], completedMissions: st
   const regionEndpoints: Array<{ first?: LayoutNode; last?: LayoutNode }> = [];
 
   regions.forEach((region, regionIndex) => {
-    const bandTop = TOP_PADDING + regionIndex * BAND_HEIGHT;
-    const nodeY = bandTop + NODE_OFFSET_Y;
+    const regionStartY =
+      TOP_PADDING + regionIndex * (region.missions.length * SPACING_Y + MARGIN_Y);
 
     const endpoints: { first?: LayoutNode; last?: LayoutNode } = {};
 
     region.missions.forEach((missionId, missionIndex) => {
       const node: LayoutNode = {
         id: missionId,
-        x: MARGIN_X + missionIndex * SPACING_X,
-        y: nodeY,
+        x: missionIndex % 2 === 0 ? NODE_OFFSET_LEFT : NODE_OFFSET_RIGHT,
+        y: regionStartY + MARGIN_Y + missionIndex * SPACING_Y,
         label: Number.parseInt(missionId, 10) || missionIndex + 1,
         title: getMissionTitle(missionId),
         regionId: region.id,
@@ -251,20 +250,26 @@ export function generateMapLayout(regions: LayoutRegion[], completedMissions: st
     if (from && to) pushEdge(from, to, true);
   }
 
-  const maxMissions = regions.reduce((max, region) => Math.max(max, region.missions.length), 0);
-  const width = Math.max(MIN_WIDTH, MARGIN_X * 2 + Math.max(0, maxMissions - 1) * SPACING_X);
-  const height = TOP_PADDING + regions.length * BAND_HEIGHT;
+  const totalMissions = regions.reduce((sum, region) => sum + region.missions.length, 0);
+  const width = MIN_WIDTH;
+  const height = TOP_PADDING + totalMissions * SPACING_Y + regions.length * MARGIN_Y;
 
   // One band per region, spanning the full map width, for terrain placement.
-  const regionAreas: RegionArea[] = regions.map((region, regionIndex) => ({
-    id: region.id,
-    emoji: region.emoji,
-    terrain: region.terrain,
-    x: 0,
-    y: TOP_PADDING + regionIndex * BAND_HEIGHT,
-    width,
-    height: BAND_HEIGHT,
-  }));
+  let yOffset = TOP_PADDING;
+  const regionAreas: RegionArea[] = regions.map((region) => {
+    const regionHeight = region.missions.length * SPACING_Y + MARGIN_Y;
+    const area = {
+      id: region.id,
+      emoji: region.emoji,
+      terrain: region.terrain,
+      x: 0,
+      y: yOffset,
+      width,
+      height: regionHeight,
+    };
+    yOffset += regionHeight;
+    return area;
+  });
 
   return { nodes, edges, regionAreas, width, height };
 }
