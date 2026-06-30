@@ -258,7 +258,7 @@ export default function LandingPage() {
           style={{
             marginTop: '1.5rem',
             padding: '0.6rem 1.2rem',
-            border: '1px solid rgba(255,255,255,0.12)',
+            border: 'none',
             fontSize: '0.85rem',
             color: '#E8E8E8',
             fontStyle: 'italic',
