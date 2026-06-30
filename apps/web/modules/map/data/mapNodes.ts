@@ -86,6 +86,74 @@ const TOP_PADDING = 50;
 /** Vertical offset of a mission node from the top of its band. */
 const NODE_OFFSET_Y = 80;
 const MIN_WIDTH = 700;
+/** Max missions per row in the single-region serpentine layout. */
+const SERPENTINE_COLS = 4;
+
+/**
+ * Lays out a single region's missions in a serpentine (boustrophedon) pattern:
+ * left-to-right on the first row, right-to-left on the next, and so on. This
+ * fills the SVG canvas more interestingly than one flat horizontal band and
+ * keeps every sequential mission spatially adjacent (the end of a row sits
+ * directly above the start of the row below). One region area spanning the full
+ * canvas carries the region's terrain and emoji landmark.
+ */
+function generateSerpentineLayout(
+  region: LayoutRegion,
+  statusFor: (missionId: string) => MapNodeStatus,
+): MapLayout {
+  const missions = region.missions;
+  const cols = Math.max(1, Math.min(SERPENTINE_COLS, missions.length || 1));
+  const rows = Math.max(1, Math.ceil(missions.length / cols));
+
+  const width = Math.max(MIN_WIDTH, MARGIN_X * 2 + (cols - 1) * SPACING_X);
+  const height = TOP_PADDING + rows * BAND_HEIGHT;
+
+  const nodes: LayoutNode[] = missions.map((missionId, index) => {
+    const row = Math.floor(index / cols);
+    const colInRow = index % cols;
+    // Reverse the column order on odd rows so the path snakes back and forth.
+    const col = row % 2 === 0 ? colInRow : cols - 1 - colInRow;
+
+    return {
+      id: missionId,
+      x: MARGIN_X + col * SPACING_X,
+      y: TOP_PADDING + row * BAND_HEIGHT + NODE_OFFSET_Y,
+      label: Number.parseInt(missionId, 10) || index + 1,
+      title: `Mission ${missionId}`,
+      regionId: region.id,
+      status: statusFor(missionId),
+    };
+  });
+
+  const edges: LayoutEdge[] = [];
+  for (let i = 0; i < nodes.length - 1; i += 1) {
+    const from = nodes[i];
+    const to = nodes[i + 1];
+    edges.push({
+      key: `${from.id}-${to.id}`,
+      x1: from.x,
+      y1: from.y,
+      x2: to.x,
+      y2: to.y,
+      completed: from.status === 'done' && to.status === 'done',
+      isGate: false,
+    });
+  }
+
+  const regionAreas: RegionArea[] = [
+    {
+      id: region.id,
+      emoji: region.emoji,
+      terrain: region.terrain,
+      x: 0,
+      y: TOP_PADDING,
+      width,
+      height: rows * BAND_HEIGHT,
+    },
+  ];
+
+  return { nodes, edges, regionAreas, width, height };
+}
 
 /**
  * Builds the map layout for a world from its `regions`.
@@ -109,6 +177,12 @@ export function generateMapLayout(regions: LayoutRegion[], completedMissions: st
     }
     return 'available';
   };
+
+  // Single-region maps (the per-region mission view) get a more creative
+  // serpentine layout that uses the full SVG canvas instead of one flat band.
+  if (regions.length === 1) {
+    return generateSerpentineLayout(regions[0], statusFor);
+  }
 
   const nodes: LayoutNode[] = [];
   // Track the first/last node of each region so we can wire gate edges.

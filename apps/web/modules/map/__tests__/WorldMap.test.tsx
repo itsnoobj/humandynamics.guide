@@ -52,4 +52,16 @@ describe('WorldMap', () => {
     render(<MapHeader />);
     expect(screen.getByText('A Field Guide to Being Human')).toBeInTheDocument();
   });
+
+  it('accepts a single `region` prop and renders one node per mission', () => {
+    const region: LayoutRegion = {
+      id: 'A',
+      title: 'Incentives',
+      emoji: '🎪',
+      terrain: 'market-stalls',
+      missions: ['26', '27', '28', '29'],
+    };
+    const { container } = render(<WorldMap region={region} accent="#DAA520" />);
+    expect(container.querySelectorAll('g[aria-label]')).toHaveLength(4);
+  });
 });

@@ -12,10 +12,23 @@ import { PathUnlocked } from './PathUnlocked';
 
 /** Props for {@link WorldMap}. */
 export interface WorldMapProps {
-  /** The world's regions, rendered as connected bands of mission nodes. */
-  regions: LayoutRegion[];
+  /**
+   * The world's regions, rendered as connected bands of mission nodes. Optional
+   * when {@link WorldMapProps.region} is supplied instead.
+   */
+  regions?: LayoutRegion[];
+  /**
+   * A single region to render on its own (the per-region mission view). When
+   * provided it takes precedence over {@link WorldMapProps.regions} and the
+   * layout switches to a serpentine pattern that fills the canvas.
+   */
+  region?: LayoutRegion;
   /** Accent colour used for completed paths, nodes, and the player indicator. */
   accent: string;
+  /** Owning world id, used to build mission → chapter navigation links. */
+  worldId?: number | string;
+  /** Region id, used to build mission → chapter navigation links. */
+  regionId?: string;
   /**
    * When provided, a "Path Unlocked" celebration is shown over the map
    * announcing the route from `from` to `to`. The parent owns this state and
@@ -45,17 +58,37 @@ const CURVE_MAGNITUDE = 28;
  * gets a ✨ sparkle as a gentle recommendation. Clicking any node navigates to
  * its chapter. The whole map can be dragged/panned.
  */
-export function WorldMap({ regions, accent, showUnlocked, onUnlockedDone }: WorldMapProps) {
+export function WorldMap({
+  regions,
+  region,
+  accent,
+  worldId,
+  regionId,
+  showUnlocked,
+  onUnlockedDone,
+}: WorldMapProps) {
   const router = useRouter();
   const completedChapters = useProgressStore((state) => state.completedChapters);
 
+  // A single `region` takes precedence and triggers the serpentine layout.
+  const effectiveRegions = region ? [region] : (regions ?? []);
+  const isSingleRegion = effectiveRegions.length === 1;
+
   const { nodes, edges, regionAreas, width, height } = generateMapLayout(
-    regions,
+    effectiveRegions,
     completedChapters,
   );
 
   const recommendedNode = nodes.find((node) => node.status === 'recommended');
   const accentColor = accent || GOLD;
+
+  // Clicking a mission opens its chapter. When we know the world/region we
+  // carry them through so the result screen can route back to this map.
+  const targetRegionId = regionId ?? region?.id;
+  const missionHref =
+    worldId != null && targetRegionId != null
+      ? `/chapter?from=map&world=${worldId}&region=${targetRegionId}`
+      : '/chapter';
 
   const backdrop = generateBackdrop(width, height);
   const terrain = regionAreas.flatMap((area) =>
@@ -97,23 +130,41 @@ export function WorldMap({ regions, accent, showUnlocked, onUnlockedDone }: Worl
           <g aria-hidden="true">{backdrop}</g>
           <g aria-hidden="true">{terrain}</g>
 
-          {/* Region emoji landmarks, at the top-centre of each region's band. */}
-          <g aria-hidden="true">
-            {regionAreas.map((area) =>
-              area.emoji ? (
-                <text
-                  key={`emoji-${area.id}`}
-                  x={area.x + area.width / 2}
-                  y={area.y + 30}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize={24}
-                >
-                  {area.emoji}
-                </text>
-              ) : null,
-            )}
-          </g>
+          {/* Region emoji landmarks. For a single region we draw one large,
+              faint landmark across the canvas; otherwise a small emoji sits at
+              the top-centre of each region's band. */}
+          {isSingleRegion ? (
+            regionAreas[0]?.emoji ? (
+              <text
+                aria-hidden="true"
+                x={width / 2}
+                y={regionAreas[0].y + regionAreas[0].height / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize={Math.min(width, regionAreas[0].height) * 0.6}
+                opacity={0.08}
+              >
+                {regionAreas[0].emoji}
+              </text>
+            ) : null
+          ) : (
+            <g aria-hidden="true">
+              {regionAreas.map((area) =>
+                area.emoji ? (
+                  <text
+                    key={`emoji-${area.id}`}
+                    x={area.x + area.width / 2}
+                    y={area.y + 30}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={24}
+                  >
+                    {area.emoji}
+                  </text>
+                ) : null,
+              )}
+            </g>
+          )}
 
           {edges.map((edge, i) => (
             <MapPath
@@ -138,7 +189,7 @@ export function WorldMap({ regions, accent, showUnlocked, onUnlockedDone }: Worl
               title={node.title}
               status={node.status}
               accent={accentColor}
-              onClick={() => router.push('/chapter')}
+              onClick={() => router.push(missionHref)}
             />
           ))}
 

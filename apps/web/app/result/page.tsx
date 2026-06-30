@@ -16,6 +16,16 @@ const CURRENT_CHAPTER_ID = '31';
  */
 const CURRENT_WORLD_ID = '2';
 
+/**
+ * The region within {@link CURRENT_WORLD_ID} that this chapter lives in.
+ * Mission 31 sits in World 2, Region A. Hardcoded for now alongside the world
+ * id; make dynamic as routing carries world/region through the flow.
+ */
+const CURRENT_REGION_ID = 'A';
+
+/** Route back to the region map this mission was launched from. */
+const MAP_HREF = `/worlds/${CURRENT_WORLD_ID}/region/${CURRENT_REGION_ID}`;
+
 function ResultPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,15 +42,15 @@ function ResultPageInner() {
     if (fromGame) {
       router.push('/game?resume=1');
     } else {
-      // Signal the world map to celebrate the path that just opened up.
+      // Signal the region map to celebrate the path that just opened up.
       localStorage.setItem('pathUnlocked', 'true');
-      router.push(`/worlds/${CURRENT_WORLD_ID}`);
+      router.push(MAP_HREF);
     }
   };
 
   const handleGoToMap = () => {
     localStorage.setItem('pathUnlocked', 'true');
-    router.push(`/worlds/${CURRENT_WORLD_ID}`);
+    router.push(MAP_HREF);
   };
   const handleGoToGame = () => router.push('/game');
 

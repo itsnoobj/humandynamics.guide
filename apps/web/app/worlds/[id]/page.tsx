@@ -1,41 +1,30 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { WorldMap } from '@/modules/map';
+import { RegionList } from '@/modules/worlds';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
-import { getWorld, worldMissionIds } from '@/lib/hierarchy';
-import { useProgressStore } from '@/store/progressStore';
+import { getWorld } from '@/lib/hierarchy';
 
-/** localStorage flag set by the result page before routing back to a world. */
-const UNLOCK_FLAG = 'pathUnlocked';
+/** A representative emoji per world, keyed by the world's numeric id. */
+const WORLD_EMOJI: Record<number, string> = {
+  1: '🪞',
+  2: '🏘️',
+  3: '🏕️',
+  4: '⛰️',
+  5: '🌀',
+  6: '🌲',
+  7: '🌉',
+  8: '🏟️',
+  9: '⚖️',
+  10: '🌅',
+};
 
 function WorldPageInner() {
   const params = useParams();
   const rawId = Array.isArray(params.id) ? params.id[0] : params.id;
   const world = getWorld(rawId ?? '');
-
-  const completedChapters = useProgressStore((state) => state.completedChapters);
-  const [showUnlocked, setShowUnlocked] = useState<{ from: string; to: string } | null>(null);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !world) return;
-    if (localStorage.getItem(UNLOCK_FLAG) !== 'true') return;
-
-    // Consume the flag immediately so a refresh doesn't replay the animation.
-    localStorage.removeItem(UNLOCK_FLAG);
-
-    const missionIds = worldMissionIds(world);
-    const lastCompletedId = completedChapters[completedChapters.length - 1];
-    const fromId =
-      lastCompletedId && missionIds.includes(lastCompletedId) ? lastCompletedId : undefined;
-    const toId = missionIds.find((id) => !completedChapters.includes(id));
-
-    if (fromId && toId) {
-      setShowUnlocked({ from: `Mission ${fromId}`, to: `Mission ${toId}` });
-    }
-  }, [world, completedChapters]);
 
   if (!world) {
     return (
@@ -59,6 +48,7 @@ function WorldPageInner() {
   }
 
   const hasContent = world.regions.length > 0;
+  const emoji = WORLD_EMOJI[world.id] ?? '🗺️';
 
   return (
     <main
@@ -69,27 +59,25 @@ function WorldPageInner() {
       }}
     >
       <ThemeToggle />
-      <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
         <Link href="/worlds" style={{ color: 'var(--color-text)', fontSize: '0.9rem' }}>
           ← Worlds
         </Link>
 
         <header style={{ textAlign: 'center', margin: 'var(--spacing-md) 0 var(--spacing-lg)' }}>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: 0 }}>
+          <div style={{ fontSize: '2.6rem', lineHeight: 1 }} aria-hidden="true">
+            {emoji}
+          </div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0.5rem 0 0' }}>
             <span style={{ color: world.accent }}>{world.worldName}</span>
           </h1>
           <p style={{ fontSize: '0.95rem', color: 'var(--color-text-dim)', marginTop: '0.25rem' }}>
-            {world.title}
+            {world.tagline}
           </p>
         </header>
 
         {hasContent ? (
-          <WorldMap
-            regions={world.regions}
-            accent={world.accent}
-            showUnlocked={showUnlocked}
-            onUnlockedDone={() => setShowUnlocked(null)}
-          />
+          <RegionList worldId={world.id} regions={world.regions} accent={world.accent} />
         ) : (
           <p style={{ textAlign: 'center', color: 'var(--color-text-dim)' }}>
             This world is still being charted. Check back soon.
@@ -101,10 +89,10 @@ function WorldPageInner() {
 }
 
 /**
- * Per-world overworld map. Reads the world id from the route, loads its
- * regions/missions from the hierarchy, and renders the {@link WorldMap} driven
- * by that data. Shows a "Path Unlocked" celebration when arriving from a freshly
- * completed mission.
+ * Region-selection screen for a world (level 2 of the navigation hierarchy).
+ * Reads the world id from the route, then lists the world's regions as cards.
+ * Selecting a region drills into its mission map at
+ * `/worlds/[id]/region/[regionId]`.
  */
 export default function WorldPage() {
   return (

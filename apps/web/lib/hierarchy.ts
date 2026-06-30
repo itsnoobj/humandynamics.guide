@@ -6,6 +6,8 @@ export interface Region {
   id: string;
   /** Human-readable region title (e.g. "Identity", "Trust"). */
   title: string;
+  /** A short, evocative description of what this region explores. */
+  description: string;
   /** Emoji landmark representing the region on the mission map. */
   emoji: string;
   /** Visual terrain hint for the map renderer. */

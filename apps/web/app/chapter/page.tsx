@@ -9,9 +9,15 @@ import { useSearchParams } from 'next/navigation';
 function ChapterPageInner() {
   const searchParams = useSearchParams();
   const fromGame = searchParams.get('from') === 'game';
+  const world = searchParams.get('world');
+  const region = searchParams.get('region');
 
   const quizHref = fromGame ? '/quiz?from=game' : '/quiz';
-  const backHref = fromGame ? '/game?resume=1' : '/map';
+  const backHref = fromGame
+    ? '/game?resume=1'
+    : world && region
+      ? `/worlds/${world}/region/${region}`
+      : '/map';
   const backLabel = fromGame ? '← Game' : '← Map';
 
   return (

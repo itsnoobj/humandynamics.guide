@@ -62,3 +62,59 @@ describe('generateMapLayout', () => {
     expect(layout.width).toBeGreaterThan(0);
   });
 });
+
+describe('generateMapLayout — single region (serpentine)', () => {
+  const SINGLE: LayoutRegion[] = [
+    {
+      id: 'A',
+      title: 'Incentives',
+      emoji: '🎪',
+      terrain: 'market-stalls',
+      missions: ['26', '27', '28', '29', '30', '31'],
+    },
+  ];
+
+  it('creates one node per mission', () => {
+    const { nodes } = generateMapLayout(SINGLE, []);
+    expect(nodes.map((n) => n.id)).toEqual(['26', '27', '28', '29', '30', '31']);
+  });
+
+  it('connects every mission sequentially with no gate edges', () => {
+    const { edges } = generateMapLayout(SINGLE, []);
+    expect(edges).toHaveLength(5);
+    expect(edges.every((e) => !e.isGate)).toBe(true);
+  });
+
+  it('snakes across multiple rows (not a single horizontal band)', () => {
+    const { nodes } = generateMapLayout(SINGLE, []);
+    const distinctRows = new Set(nodes.map((n) => n.y));
+    // 6 missions at 4 columns => 2 rows.
+    expect(distinctRows.size).toBe(2);
+  });
+
+  it('reverses x direction on alternating rows (boustrophedon)', () => {
+    const { nodes } = generateMapLayout(SINGLE, []);
+    // Row 0 (first 4) runs left → right; the 5th node (row 1) starts from the
+    // right, so its x should match the 4th node's x (rightmost column).
+    expect(nodes[4].x).toBe(nodes[3].x);
+    // And the 6th node sits left of the 5th as the row snakes back.
+    expect(nodes[5].x).toBeLessThan(nodes[4].x);
+  });
+
+  it('exposes a single full-canvas region area carrying terrain and emoji', () => {
+    const { regionAreas, width } = generateMapLayout(SINGLE, []);
+    expect(regionAreas).toHaveLength(1);
+    expect(regionAreas[0].terrain).toBe('market-stalls');
+    expect(regionAreas[0].emoji).toBe('🎪');
+    expect(regionAreas[0].width).toBe(width);
+  });
+
+  it('derives status the same way (done / recommended / available)', () => {
+    const { nodes } = generateMapLayout(SINGLE, ['26', '27']);
+    const statusById = Object.fromEntries(nodes.map((n) => [n.id, n.status]));
+    expect(statusById['26']).toBe('done');
+    expect(statusById['27']).toBe('done');
+    expect(statusById['28']).toBe('recommended');
+    expect(statusById['29']).toBe('available');
+  });
+});
