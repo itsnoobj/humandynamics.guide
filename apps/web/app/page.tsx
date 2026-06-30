@@ -341,8 +341,8 @@ export default function LandingPage() {
           position: absolute;
           inset: 0;
           background-image: url('/assets/bg/landing-light.png');
-          background-size: cover;
-          background-position: center bottom;
+          background-size: contain;
+          background-position: bottom center;
           background-repeat: no-repeat;
           opacity: 0.15;
           pointer-events: none;
