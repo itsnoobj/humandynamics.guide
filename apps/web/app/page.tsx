@@ -54,8 +54,11 @@ export default function LandingPage() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1.5rem',
+        justifyContent: 'flex-start',
+        paddingTop: '8vh',
+        paddingBottom: '2rem',
+        paddingLeft: '1.5rem',
+        paddingRight: '1.5rem',
         background: 'var(--color-bg)',
         fontFamily: 'var(--font-primary)',
         textAlign: 'center',
@@ -340,6 +343,7 @@ export default function LandingPage() {
         .landing-bg {
           position: absolute;
           inset: 0;
+          background-color: var(--color-bg);
           background-image: url('/assets/bg/landing-light.png');
           background-size: contain;
           background-position: bottom center;
@@ -348,8 +352,9 @@ export default function LandingPage() {
           pointer-events: none;
         }
         [data-theme="dark"] .landing-bg {
+          background-color: #0D0D0D;
           background-image: url('/assets/bg/landing-dark.png');
-          opacity: 0.3;
+          opacity: 0.4;
         }
         .glimpse-card {
           transition: border-color 0.2s, transform 0.2s;
