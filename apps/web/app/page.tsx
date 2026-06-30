@@ -281,7 +281,7 @@ export default function LandingPage() {
           background-size: contain;
           background-position: bottom center;
           background-repeat: no-repeat;
-          opacity: 0.15;
+          opacity: 0.7;
           pointer-events: none;
         }
         [data-theme="dark"] .landing-bg {
