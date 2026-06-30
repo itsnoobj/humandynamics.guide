@@ -275,7 +275,10 @@ export default function LandingPage() {
       <style>{`
         .landing-bg {
           position: absolute;
-          inset: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 50%;
           background-color: var(--color-bg);
           background-image: url('/assets/bg/landing-light.png');
           background-size: contain;
@@ -288,6 +291,7 @@ export default function LandingPage() {
           background-color: #000000;
           background-image: url('/assets/bg/landing-dark.png');
           opacity: 1;
+          height: 50%;
         }
         [data-theme="dark"] main {
           background: #000000 !important;
