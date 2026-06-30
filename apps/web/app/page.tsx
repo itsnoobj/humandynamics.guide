@@ -140,29 +140,25 @@ export default function LandingPage() {
             {/* Click indicator — dot-matrix pointer hand */}
             <svg
               className="click-hand"
-              viewBox="0 0 16 16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               style={{
                 position: 'absolute',
-                top: '-14px',
-                right: '-14px',
+                top: '-12px',
+                right: '-12px',
                 width: '28px',
                 height: '28px',
               }}
             >
-              <circle cx="8" cy="2" r="1" fill="#DAA520" />
-              <circle cx="8" cy="4" r="1" fill="#DAA520" />
-              <circle cx="8" cy="6" r="1" fill="#DAA520" />
-              <circle cx="8" cy="8" r="1" fill="#DAA520" />
-              <circle cx="6" cy="8" r="1" fill="#DAA520" />
-              <circle cx="4" cy="8" r="1" fill="#DAA520" />
-              <circle cx="6" cy="10" r="1" fill="#DAA520" />
-              <circle cx="8" cy="10" r="1" fill="#DAA520" />
-              <circle cx="10" cy="10" r="1" fill="#DAA520" />
-              <circle cx="6" cy="12" r="1" fill="#DAA520" />
-              <circle cx="8" cy="12" r="1" fill="#DAA520" />
-              <circle cx="10" cy="12" r="1" fill="#DAA520" />
-              <circle cx="10" cy="8" r="1" fill="#DAA520" />
-              <circle cx="12" cy="8" r="1" fill="#DAA520" />
+              <path d="M8 13V4.5a1.5 1.5 0 0 1 3 0V12" />
+              <path d="M11 11.5a1.5 1.5 0 0 1 3 0V12" />
+              <path d="M14 10.5a1.5 1.5 0 0 1 3 0V12" />
+              <path d="M17 11.5a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6H12a6 6 0 0 1-6-6v-1.5" />
+              <path d="M5 14.5a1.5 1.5 0 0 1 3 0" />
             </svg>
             <svg viewBox="0 0 300 110" style={{ width: '100%', display: 'block' }}>
               <path
@@ -236,29 +232,25 @@ export default function LandingPage() {
             {/* Click indicator — dot-matrix pointer hand */}
             <svg
               className="click-hand"
-              viewBox="0 0 16 16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               style={{
                 position: 'absolute',
-                top: '-14px',
-                right: '-14px',
+                top: '-12px',
+                right: '-12px',
                 width: '28px',
                 height: '28px',
               }}
             >
-              <circle cx="8" cy="2" r="1" fill="#DAA520" />
-              <circle cx="8" cy="4" r="1" fill="#DAA520" />
-              <circle cx="8" cy="6" r="1" fill="#DAA520" />
-              <circle cx="8" cy="8" r="1" fill="#DAA520" />
-              <circle cx="6" cy="8" r="1" fill="#DAA520" />
-              <circle cx="4" cy="8" r="1" fill="#DAA520" />
-              <circle cx="6" cy="10" r="1" fill="#DAA520" />
-              <circle cx="8" cy="10" r="1" fill="#DAA520" />
-              <circle cx="10" cy="10" r="1" fill="#DAA520" />
-              <circle cx="6" cy="12" r="1" fill="#DAA520" />
-              <circle cx="8" cy="12" r="1" fill="#DAA520" />
-              <circle cx="10" cy="12" r="1" fill="#DAA520" />
-              <circle cx="10" cy="8" r="1" fill="#DAA520" />
-              <circle cx="12" cy="8" r="1" fill="#DAA520" />
+              <path d="M8 13V4.5a1.5 1.5 0 0 1 3 0V12" />
+              <path d="M11 11.5a1.5 1.5 0 0 1 3 0V12" />
+              <path d="M14 10.5a1.5 1.5 0 0 1 3 0V12" />
+              <path d="M17 11.5a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6H12a6 6 0 0 1-6-6v-1.5" />
+              <path d="M5 14.5a1.5 1.5 0 0 1 3 0" />
             </svg>
             <svg viewBox="0 0 300 110" style={{ width: '100%', display: 'block' }}>
               <line x1="0" y1="95" x2="300" y2="95" stroke="var(--color-border)" strokeWidth="1" />
