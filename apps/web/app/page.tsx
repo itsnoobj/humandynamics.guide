@@ -1,36 +1,33 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { ThemeToggle } from '@/shared/components/ThemeToggle';
 
 const ROTATING_WORDS = [
   'manipulation',
   'difficult bosses',
-  'team conflicts',
+  'team politics',
   'career crossroads',
-  'office politics',
+  'broken trust',
   'ethical dilemmas',
   'ego traps',
-  'trust issues',
+  'unfair promotions',
+  'passive aggression',
+  'resistance to change',
 ];
 
-const ROTATE_INTERVAL = 2500;
-
-export default function HomePage() {
-  const [index, setIndex] = useState(0);
+export default function LandingPage() {
+  const [wordIndex, setWordIndex] = useState(0);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // Fade out, swap word, fade back in.
       setVisible(false);
-      const timeout = setTimeout(() => {
-        setIndex((i) => (i + 1) % ROTATING_WORDS.length);
+      setTimeout(() => {
+        setWordIndex((i) => (i + 1) % ROTATING_WORDS.length);
         setVisible(true);
-      }, 300);
-      return () => clearTimeout(timeout);
-    }, ROTATE_INTERVAL);
+      }, 400);
+    }, 2800);
     return () => clearInterval(interval);
   }, []);
 
@@ -42,76 +39,118 @@ export default function HomePage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        textAlign: 'center',
-        padding: 'var(--spacing-lg)',
+        padding: '2rem 1.5rem',
         background: 'var(--color-bg)',
-        color: 'var(--color-text)',
+        fontFamily: 'var(--font-primary)',
+        textAlign: 'center',
       }}
     >
-      <ThemeToggle />
+      {/* Hero — the rotating text IS the headline */}
+      <div style={{ maxWidth: '700px' }}>
+        <p
+          style={{
+            fontSize: '0.85rem',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            color: 'var(--color-text-dim)',
+            marginBottom: '1.5rem',
+          }}
+        >
+          A Field Guide to Being Human
+        </p>
 
-      <div style={{ maxWidth: '640px' }}>
         <h1
           style={{
             fontSize: 'clamp(2rem, 6vw, 3.5rem)',
             fontWeight: 700,
-            lineHeight: 1.1,
-            margin: 0,
+            lineHeight: 1.2,
+            color: 'var(--color-text)',
+            marginBottom: '0.5rem',
           }}
         >
-          A Field Guide to Being Human
+          Stories to navigate
         </h1>
-
-        <p
-          style={{
-            fontSize: 'clamp(1.1rem, 3vw, 1.5rem)',
-            marginTop: 'var(--spacing-md)',
-            marginBottom: 'var(--spacing-sm)',
-          }}
-        >
-          Stories to navigate{' '}
-          <span
-            style={{
-              color: 'var(--color-gold)',
-              fontWeight: 600,
-              opacity: visible ? 1 : 0,
-              transition: 'opacity 0.3s ease',
-              display: 'inline-block',
-            }}
-          >
-            {ROTATING_WORDS[index]}
-          </span>
-        </p>
-
-        <p
-          style={{
-            fontSize: '0.95rem',
-            color: 'var(--color-text-dim)',
-            maxWidth: '34rem',
-            margin: '0 auto',
-          }}
-        >
-          Learn through ancient stories, real-world scenarios, and interactive challenges.
-        </p>
 
         <div
           style={{
+            fontSize: 'clamp(2rem, 6vw, 3.5rem)',
+            fontWeight: 700,
+            lineHeight: 1.2,
+            minHeight: '1.3em',
+            color: 'var(--color-gold)',
+            opacity: visible ? 1 : 0,
+            transform: visible ? 'translateY(0)' : 'translateY(8px)',
+            transition: 'opacity 0.4s ease, transform 0.4s ease',
+          }}
+        >
+          {ROTATING_WORDS[wordIndex]}
+        </div>
+
+        <p
+          style={{
+            marginTop: '2rem',
+            fontSize: '1.1rem',
+            lineHeight: 1.7,
+            color: 'var(--color-text-dim)',
+            maxWidth: '500px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          Ancient wisdom meets real-world dilemmas. Learn through stories from the Mahabharata,
+          Lincoln, Mandela — then test yourself with interactive challenges.
+        </p>
+
+        {/* What you get — quick visual proof */}
+        <div
+          style={{
             display: 'flex',
-            gap: 'var(--spacing-md)',
             justifyContent: 'center',
+            gap: '2rem',
+            marginTop: '2.5rem',
             flexWrap: 'wrap',
-            marginTop: 'var(--spacing-lg)',
+          }}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '1.5rem', color: 'var(--color-gold)' }}>10</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-dim)' }}>Worlds</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '1.5rem', color: 'var(--color-gold)' }}>110</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-dim)' }}>Missions</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '1.5rem', color: 'var(--color-gold)' }}>5</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-dim)' }}>
+              Challenge Types
+            </div>
+          </div>
+        </div>
+
+        {/* CTAs */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+            marginTop: '3rem',
+            maxWidth: '320px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
           }}
         >
           <Link
             href="/worlds"
             style={{
-              padding: '0.75rem 1.5rem',
+              display: 'block',
+              padding: '0.9rem 1.5rem',
               background: 'var(--color-gold)',
-              color: '#1f1d1a',
-              fontWeight: 600,
+              color: '#1A1A1A',
               textDecoration: 'none',
-              border: '2px solid var(--color-gold)',
+              fontWeight: 600,
+              fontSize: '1rem',
+              textAlign: 'center',
+              borderRadius: 'var(--radius)',
             }}
           >
             Explore the Map →
@@ -119,26 +158,32 @@ export default function HomePage() {
           <Link
             href="/game"
             style={{
-              padding: '0.75rem 1.5rem',
+              display: 'block',
+              padding: '0.9rem 1.5rem',
               background: 'transparent',
               color: 'var(--color-text)',
-              fontWeight: 600,
               textDecoration: 'none',
-              border: '2px solid var(--color-border)',
+              fontWeight: 600,
+              fontSize: '1rem',
+              border: '1px solid var(--color-border)',
+              textAlign: 'center',
+              borderRadius: 'var(--radius)',
             }}
           >
             Play the Game →
           </Link>
         </div>
 
+        {/* Bottom note */}
         <p
           style={{
-            fontSize: '0.75rem',
+            marginTop: '3rem',
+            fontSize: '0.8rem',
             color: 'var(--color-text-dim)',
-            marginTop: 'var(--spacing-lg)',
+            opacity: 0.6,
           }}
         >
-          110 missions across 10 worlds
+          No signup. No paywall. Just start.
         </p>
       </div>
     </main>
