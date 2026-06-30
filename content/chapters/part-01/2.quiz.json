@@ -3,43 +3,43 @@
   "challenges": [
     {
       "type": "scenario-choice",
-      "situation": "You shipped the bug that took down checkout for an hour. In the postmortem, all eyes turn to you.",
+      "situation": "A config you pushed took down checkout for an hour during peak traffic. The incident review starts and the room looks at you.",
       "options": [
-        { "text": "'My mistake — I missed it in review. Here's what I'm putting in place so it can't recur.'", "correct": true, "feedback": "Ownership first, repair second. This converts the error from a stain into evidence you can be trusted with hard things — which is what actually rebuilds standing." },
-        { "text": "'Well, the brief was unclear and QA had a thin week, so a few things slipped.'", "correct": false, "feedback": "Every word may be true, but it's a wall, not an apology. The instant the explanation comes before ownership, the room hears deflection." },
-        { "text": "'This is all my fault, I'm terrible at this, I'm so sorry, I always do this.'", "correct": false, "feedback": "Theatrical over-owning is ego in a humble costume — it makes the moment about you and fishes for reassurance instead of fixing anything." }
+        { "text": "'My mistake — I skipped the staging check. I'm adding a required gate so this can't ship again.'", "correct": true, "feedback": "Ownership first, repair second, no 'but.' This turns the error into proof you can be handed hard things — which is what rebuilds standing." },
+        { "text": "'The rollout window was tight and staging was flaky, so the check got skipped.'", "correct": false, "feedback": "Possibly all true — and still a wall. Explanation before ownership reads as deflection no matter how accurate it is." },
+        { "text": "'Honestly this is on me, I keep messing up, I don't know why you trust me with prod.'", "correct": false, "feedback": "Theatrical self-blame makes the moment about your feelings and fishes for reassurance. It's ego in a humble costume, and it fixes nothing." }
       ]
     },
     {
       "type": "spot-the-force",
-      "situation": "Caught in an error, your brain instantly hands you a pre-written story: the success was your skill, this failure was just bad circumstances.",
-      "question": "Which force is driving this?",
+      "situation": "Minutes after a project slips, you've already got a clean narrative: the wins this quarter were your doing, this miss was the dependencies and the reorg.",
+      "question": "What produced that tidy story so fast?",
       "options": [
-        { "text": "Honest, careful recollection", "correct": false, "feedback": "It feels honest, but that's the trap. The story arrives pre-written and biased before you've actually examined the facts." },
-        { "text": "Self-serving bias defending the ego", "correct": true, "feedback": "We instinctively credit wins to skill and failures to circumstance. You don't decide to do it — the ego, your immune system for the self, hands you the deflection as if it were truth." },
-        { "text": "Rational risk assessment", "correct": false, "feedback": "There's no weighing of evidence here — just an automatic flinch away from the feeling of having been wrong. That's protection, not reasoning." }
+        { "text": "Self-serving bias — credit to skill, blame to circumstance, written before you examined anything.", "correct": true, "feedback": "It arrives automatically and feels like honest recall. That speed and that flattering split are the signature of the bias defending the ego." },
+        { "text": "An accurate post-mortem of what genuinely went wrong.", "correct": false, "feedback": "A real post-mortem weighs evidence and finds your own contribution too. This story exonerates you before any weighing happened." },
+        { "text": "Healthy confidence in your track record.", "correct": false, "feedback": "Confidence doesn't need to offload every failure onto outside forces. The reflex to deflect blame is protection, not confidence." }
       ]
     },
     {
       "type": "drag-match",
-      "instruction": "Put Lincoln's 'hot letter' method in the right order:",
+      "instruction": "Put Lincoln's 'hot letter' method in order:",
       "items": [
-        { "id": "a", "text": "Feel the fury rising and pour every blaming, justifying thought onto the page" },
+        { "id": "a", "text": "Feel the fury and pour every blaming, justifying line onto the page" },
         { "id": "b", "text": "Let the writing drain the venom in private" },
-        { "id": "c", "text": "Fold the letter and never send it — preserve the relationship" },
-        { "id": "d", "text": "Show up generous in public, without needing the other person to lose" }
+        { "id": "c", "text": "Fold it and never send it — spare the relationship" },
+        { "id": "d", "text": "Show up generous in public, not needing the other person to lose" }
       ],
       "correctOrder": ["a", "b", "c", "d"]
     },
     {
       "type": "card-flip",
-      "front": "Owning a mistake will damage my reputation — better to protect it by deflecting.",
-      "back": "The people we trust most are the ones who admit errors easily; it signals they're secure enough not to need the lie. Ego protects your reputation by doing the one thing that quietly destroys it. Like kintsugi gold filling a crack, the admission is what makes you whole — not what leaks out."
+      "front": "Owning a mistake openly damages my reputation, so deflecting protects it.",
+      "back": "The people we trust most are the ones who admit errors easily — it signals they don't need the lie. Deflecting is how ego protects your reputation by quietly destroying it. Like kintsugi, the admission is the gold going in, not leaking out."
     }
   ],
   "principle": {
     "text": "Ego doesn't protect you from the mistake — it protects you from the feeling of having made one.",
-    "subtext": "The pain isn't the error. It's the gap between 'I am competent' and 'I just proved I'm not' — and the defending, explaining, and deflecting are all attempts to close that gap without having to feel it."
+    "subtext": "The pain isn't the error. It's the gap between 'I am competent' and 'I just proved I'm not' — and the defending, explaining, and deflecting are all attempts to close that gap without feeling it."
   },
   "reflection": "Recall the last time you said 'my mistake' cleanly, with no 'but.' What did the room actually do — pounce, or relax? What does that tell you about the flinch you're protecting?"
 }
