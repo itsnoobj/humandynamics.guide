@@ -387,9 +387,10 @@ export default function LandingPage() {
             fontStyle: 'italic',
             background: 'none',
             display: 'block',
-            textAlign: 'right',
+            textAlign: 'center',
             maxWidth: '25ch',
             marginLeft: 'auto',
+            marginRight: 'auto',
           }}
         >
           <span
