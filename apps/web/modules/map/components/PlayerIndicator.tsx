@@ -4,6 +4,8 @@ export interface PlayerIndicatorProps {
   x: number;
   /** SVG y coordinate of the node the indicator hovers above. */
   y: number;
+  /** Accent colour for the indicator. Defaults to gold. */
+  accent?: string;
 }
 
 const GOLD = '#DAA520';
@@ -11,16 +13,16 @@ const GOLD = '#DAA520';
 const OFFSET = 40;
 
 /**
- * A bouncing gold triangle that marks the learner's current level,
+ * A bouncing triangle that marks the learner's current level,
  * Super Mario World style. Points downward at the node below it.
  */
-export function PlayerIndicator({ x, y }: PlayerIndicatorProps) {
+export function PlayerIndicator({ x, y, accent = GOLD }: PlayerIndicatorProps) {
   const tipY = y - OFFSET;
   // Downward-pointing triangle: two top corners and a bottom tip.
   const points = `${x - 9},${tipY - 14} ${x + 9},${tipY - 14} ${x},${tipY}`;
 
   return (
-    <polygon points={points} fill={GOLD} aria-hidden="true">
+    <polygon points={points} fill={accent} aria-hidden="true">
       <animateTransform
         attributeName="transform"
         attributeType="XML"

@@ -9,6 +9,13 @@ import { useProgressStore } from '@/store/progressStore';
 /** The chapter this result screen completes. */
 const CURRENT_CHAPTER_ID = '31';
 
+/**
+ * The world this chapter belongs to. Hardcoded for now since only World 2 has
+ * authored content; make this dynamic (from the store or URL) as more worlds
+ * are filled in.
+ */
+const CURRENT_WORLD_ID = '2';
+
 function ResultPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -25,15 +32,15 @@ function ResultPageInner() {
     if (fromGame) {
       router.push('/game?resume=1');
     } else {
-      // Signal the map to celebrate the path that just opened up.
+      // Signal the world map to celebrate the path that just opened up.
       localStorage.setItem('pathUnlocked', 'true');
-      router.push('/map');
+      router.push(`/worlds/${CURRENT_WORLD_ID}`);
     }
   };
 
   const handleGoToMap = () => {
     localStorage.setItem('pathUnlocked', 'true');
-    router.push('/map');
+    router.push(`/worlds/${CURRENT_WORLD_ID}`);
   };
   const handleGoToGame = () => router.push('/game');
 

@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { mapNodes } from '../data/mapNodes';
-import { useMapProgress } from '../hooks/useMapProgress';
+import { useProgressStore } from '@/store/progressStore';
+import { generateMapLayout, type LayoutRegion } from '../data/mapNodes';
 import { MapPath } from './MapPath';
 import { MapNode } from './MapNode';
 import { PlayerIndicator } from './PlayerIndicator';
@@ -10,6 +10,10 @@ import { PathUnlocked } from './PathUnlocked';
 
 /** Props for {@link WorldMap}. */
 export interface WorldMapProps {
+  /** The world's regions, each rendered as a labelled band of mission nodes. */
+  regions: LayoutRegion[];
+  /** Accent colour used for completed paths, nodes, and the player indicator. */
+  accent: string;
   /**
    * When provided, a "Path Unlocked" celebration is shown over the map
    * announcing the route from `from` to `to`. The parent owns this state and
@@ -20,35 +24,30 @@ export interface WorldMapProps {
   onUnlockedDone?: () => void;
 }
 
+const GOLD = '#DAA520';
+
 /**
- * The Super Mario World style overworld map.
+ * The Super Mario World style overworld map for a single world.
  *
- * Renders dotted path segments between level nodes, the nodes themselves
- * (gold/done, white/current, grey/locked), and a bouncing indicator above the
- * current node. Clicking a non-locked node navigates to its chapter. When
- * {@link WorldMapProps.showUnlocked} is set, a celebratory overlay is layered
- * on top of the map.
+ * Node positions, paths, and region labels are generated programmatically from
+ * the world's {@link WorldMapProps.regions} via {@link generateMapLayout}, so
+ * any region/mission shape renders without hand-placed coordinates. Each region
+ * occupies a horizontal band with a title label; sequential missions are
+ * connected, and "gate" segments bridge regions. Completed paths and nodes use
+ * the world's {@link WorldMapProps.accent} colour. Clicking a non-locked node
+ * navigates to its chapter.
  */
-export function WorldMap({ showUnlocked, onUnlockedDone }: WorldMapProps = {}) {
+export function WorldMap({ regions, accent, showUnlocked, onUnlockedDone }: WorldMapProps) {
   const router = useRouter();
-  const statuses = useMapProgress();
+  const completedChapters = useProgressStore((state) => state.completedChapters);
 
-  const nodeById = new Map(mapNodes.map((node) => [node.id, node]));
-
-  // A segment is "completed" when both endpoints are done; locked when the
-  // destination is locked. Everything else is an available (white) path.
-  const edges = mapNodes.flatMap((from) =>
-    from.connections.map((toId) => {
-      const to = nodeById.get(toId)!;
-      const fromStatus = statuses[from.id];
-      const toStatus = statuses[to.id];
-      const completed = fromStatus === 'done' && toStatus === 'done';
-      const locked = toStatus === 'locked';
-      return { key: `${from.id}-${toId}`, from, to, completed, locked };
-    }),
+  const { nodes, edges, regionLabels, width, height } = generateMapLayout(
+    regions,
+    completedChapters,
   );
 
-  const currentNode = mapNodes.find((node) => statuses[node.id] === 'current');
+  const currentNode = nodes.find((node) => node.status === 'current');
+  const accentColor = accent || GOLD;
 
   return (
     <div>
@@ -61,38 +60,57 @@ export function WorldMap({ showUnlocked, onUnlockedDone }: WorldMapProps = {}) {
         }}
       >
         <svg
-          viewBox="0 0 700 500"
+          viewBox={`0 0 ${width} ${height}`}
           preserveAspectRatio="xMidYMid meet"
           className="h-auto"
-          style={{ minWidth: '700px', width: '100%' }}
+          style={{ minWidth: `${width}px`, width: '100%' }}
           role="img"
-          aria-label="World map of Part II chapters"
+          aria-label={`World map with ${nodes.length} missions`}
         >
-          {edges.map(({ key, from, to, completed, locked }) => (
+          {regionLabels.map((label) => (
+            <text
+              key={label.id}
+              x={label.x}
+              y={label.y}
+              fontSize={14}
+              fontWeight={700}
+              fill={accentColor}
+              letterSpacing="0.05em"
+            >
+              {label.title.toUpperCase()}
+            </text>
+          ))}
+
+          {edges.map((edge) => (
             <MapPath
-              key={key}
-              x1={from.x}
-              y1={from.y}
-              x2={to.x}
-              y2={to.y}
-              completed={completed}
-              locked={locked}
+              key={edge.key}
+              x1={edge.x1}
+              y1={edge.y1}
+              x2={edge.x2}
+              y2={edge.y2}
+              completed={edge.completed}
+              locked={edge.locked}
+              isGate={edge.isGate}
+              accent={accentColor}
             />
           ))}
 
-          {mapNodes.map((node) => (
+          {nodes.map((node) => (
             <MapNode
               key={node.id}
               x={node.x}
               y={node.y}
               label={node.label}
               title={node.title}
-              status={statuses[node.id] ?? 'locked'}
+              status={node.status}
+              accent={accentColor}
               onClick={() => router.push('/chapter')}
             />
           ))}
 
-          {currentNode && <PlayerIndicator x={currentNode.x} y={currentNode.y} />}
+          {currentNode && (
+            <PlayerIndicator x={currentNode.x} y={currentNode.y} accent={accentColor} />
+          )}
         </svg>
 
         {showUnlocked && (

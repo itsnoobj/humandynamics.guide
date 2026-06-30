@@ -15,6 +15,8 @@ export interface MapNodeProps {
   title: string;
   /** Current node status, which drives colours and interactivity. */
   status: MapNodeStatus;
+  /** Accent colour for completed/current nodes. Defaults to gold. */
+  accent?: string;
   /** Click handler; only invoked for non-locked nodes. */
   onClick?: () => void;
 }
@@ -30,12 +32,12 @@ interface NodeStyle {
   text: string;
 }
 
-function styleFor(status: MapNodeStatus, label: number): NodeStyle {
+function styleFor(status: MapNodeStatus, label: number, accent: string): NodeStyle {
   switch (status) {
     case 'done':
-      return { fill: GOLD, stroke: WHITE, textFill: WHITE, text: '★' };
+      return { fill: accent, stroke: WHITE, textFill: WHITE, text: '★' };
     case 'current':
-      return { fill: WHITE, stroke: GOLD, textFill: '#1A1A1A', text: String(label) };
+      return { fill: WHITE, stroke: accent, textFill: '#1A1A1A', text: String(label) };
     case 'locked':
     default:
       return { fill: '#333333', stroke: '#555555', textFill: '#777777', text: String(label) };
@@ -47,8 +49,8 @@ function styleFor(status: MapNodeStatus, label: number): NodeStyle {
  * Gold with a star when done, white with a number when current,
  * dark and dimmed when locked. Non-locked nodes are clickable.
  */
-export function MapNode({ x, y, label, title, status, onClick }: MapNodeProps) {
-  const { fill, stroke, textFill, text } = styleFor(status, label);
+export function MapNode({ x, y, label, title, status, accent = GOLD, onClick }: MapNodeProps) {
+  const { fill, stroke, textFill, text } = styleFor(status, label, accent);
   const interactive = status !== 'locked';
 
   const handleClick = () => {

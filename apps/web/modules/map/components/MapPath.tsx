@@ -11,10 +11,14 @@ export interface MapPathProps {
   x2: number;
   /** End y coordinate. */
   y2: number;
-  /** Whether the segment has been completed (drawn in gold). */
+  /** Whether the segment has been completed (drawn in the accent colour). */
   completed: boolean;
   /** Whether the segment is locked (drawn in grey). */
   locked?: boolean;
+  /** Accent colour used for completed segments. Defaults to gold. */
+  accent?: string;
+  /** Whether this is a region-to-region "gate" segment (drawn dashed wider). */
+  isGate?: boolean;
 }
 
 const GOLD = '#DAA520';
@@ -23,10 +27,20 @@ const GREY = '#444444';
 
 /**
  * A dotted path segment connecting two level nodes, Super Mario World style.
- * Gold when completed, grey when locked, white otherwise.
+ * Accent-coloured when completed, grey when locked, white otherwise. Gate
+ * segments (between regions) use a longer dash to read as a transition.
  */
-export function MapPath({ x1, y1, x2, y2, completed, locked = false }: MapPathProps) {
-  const stroke = completed ? GOLD : locked ? GREY : WHITE;
+export function MapPath({
+  x1,
+  y1,
+  x2,
+  y2,
+  completed,
+  locked = false,
+  accent = GOLD,
+  isGate = false,
+}: MapPathProps) {
+  const stroke = completed ? accent : locked ? GREY : WHITE;
 
   return (
     <line
@@ -37,7 +51,7 @@ export function MapPath({ x1, y1, x2, y2, completed, locked = false }: MapPathPr
       stroke={stroke}
       strokeWidth={5}
       strokeLinecap="round"
-      strokeDasharray="2 12"
+      strokeDasharray={isGate ? '2 18' : '2 12'}
     />
   );
 }

@@ -14,8 +14,5 @@ export type { MapPathProps } from './components/MapPath';
 export { PlayerIndicator } from './components/PlayerIndicator';
 export type { PlayerIndicatorProps } from './components/PlayerIndicator';
 
-export { mapNodes } from './data/mapNodes';
-export type { MapNodeData } from './data/mapNodes';
-
-export { useMapProgress } from './hooks/useMapProgress';
-export type { NodeStatusMap } from './hooks/useMapProgress';
+export { generateMapLayout } from './data/mapNodes';
+export type { LayoutRegion, LayoutNode, LayoutEdge, RegionLabel, MapLayout } from './data/mapNodes';

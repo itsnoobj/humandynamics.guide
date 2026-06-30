@@ -1,31 +1,175 @@
-/** A single level node on the world map. */
-export interface MapNodeData {
-  /** Unique node id, also used to wire up {@link connections}. */
-  id: number;
-  /** SVG x coordinate (viewBox 0 0 700 500). */
-  x: number;
-  /** SVG y coordinate (viewBox 0 0 700 500). */
-  y: number;
-  /** Display number shown inside the node. */
-  label: number;
-  /** Short chapter title rendered below the node. */
+import type { MapNodeStatus } from '../components/MapNode';
+
+/** A region as consumed by the map layout (subset of the hierarchy Region). */
+export interface LayoutRegion {
+  /** Region id within its world (e.g. "A"). */
+  id: string;
+  /** Region title, rendered as a band label. */
   title: string;
-  /** Chapter id this node links to (route param for /chapter). */
-  chapterId: string;
-  /** Ids of nodes this node connects to (drawn as paths). */
-  connections: number[];
+  /** Ordered mission ids placed along this region's horizontal band. */
+  missions: string[];
 }
 
+/** A positioned mission node on the world map. */
+export interface LayoutNode {
+  /** Mission id (also the chapter id). */
+  id: string;
+  /** SVG x coordinate of the node centre. */
+  x: number;
+  /** SVG y coordinate of the node centre. */
+  y: number;
+  /** Number shown inside the node (derived from the mission id). */
+  label: number;
+  /** Short label rendered below the node. */
+  title: string;
+  /** Owning region id. */
+  regionId: string;
+  /** Computed lifecycle status driven by completed missions. */
+  status: MapNodeStatus;
+}
+
+/** A path segment between two nodes. */
+export interface LayoutEdge {
+  /** Stable React key. */
+  key: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  /** Both endpoints completed. */
+  completed: boolean;
+  /** Destination still locked. */
+  locked: boolean;
+  /** True when this segment bridges the last node of one region to the
+   * first node of the next (a "gate" between regions). */
+  isGate: boolean;
+}
+
+/** An SVG text label positioned above a region's band. */
+export interface RegionLabel {
+  id: string;
+  title: string;
+  x: number;
+  y: number;
+}
+
+/** The full programmatic layout for a world's regions. */
+export interface MapLayout {
+  nodes: LayoutNode[];
+  edges: LayoutEdge[];
+  regionLabels: RegionLabel[];
+  /** SVG viewBox width, sized to the widest region. */
+  width: number;
+  /** SVG viewBox height, sized to the number of regions. */
+  height: number;
+}
+
+// Layout constants, tuned for a Super Mario World style overworld. Coordinates
+// are generated rather than hand-placed so any region/mission shape works.
+const MARGIN_X = 90;
+const SPACING_X = 130;
+const BAND_HEIGHT = 150;
+const TOP_PADDING = 50;
+/** Vertical offset of a mission node from the top of its band. */
+const NODE_OFFSET_Y = 80;
+/** Vertical offset of a region label from the top of its band. */
+const LABEL_OFFSET_Y = 28;
+const MIN_WIDTH = 700;
+
 /**
- * Part II — Section A chapters laid out as a Super Mario World overworld.
- * Coordinates are tuned for an SVG viewBox of 0 0 700 500.
+ * Builds the map layout for a world from its `regions`.
+ *
+ * Each region occupies a horizontal band; its missions are spaced left to
+ * right along that band. Sequential missions within a region are connected,
+ * and a "gate" segment links the last mission of one region to the first of
+ * the next. Node status is derived from `completedMissions`: completed nodes
+ * are `done`, the first uncompleted node (in flat order) is `current`, and the
+ * rest are `locked`.
  */
-export const mapNodes: MapNodeData[] = [
-  { id: 1, x: 100, y: 420, label: 1, title: 'Hidden Motives', chapterId: '26', connections: [2] },
-  { id: 2, x: 250, y: 360, label: 2, title: 'Gaming Metrics', chapterId: '27', connections: [3] },
-  { id: 3, x: 400, y: 420, label: 3, title: 'Promotions', chapterId: '28', connections: [4] },
-  { id: 4, x: 400, y: 260, label: 4, title: 'Resisting Change', chapterId: '31', connections: [5] },
-  { id: 5, x: 550, y: 200, label: 5, title: 'Ownership', chapterId: '32', connections: [6] },
-  { id: 6, x: 550, y: 80, label: 6, title: 'Meeting Theatre', chapterId: '33', connections: [7] },
-  { id: 7, x: 350, y: 80, label: 7, title: 'Org Change', chapterId: '73', connections: [] },
-];
+export function generateMapLayout(regions: LayoutRegion[], completedMissions: string[]): MapLayout {
+  const completed = new Set(completedMissions);
+  let currentAssigned = false;
+
+  const statusFor = (missionId: string): MapNodeStatus => {
+    if (completed.has(missionId)) return 'done';
+    if (!currentAssigned) {
+      currentAssigned = true;
+      return 'current';
+    }
+    return 'locked';
+  };
+
+  const nodes: LayoutNode[] = [];
+  const regionLabels: RegionLabel[] = [];
+  // Track the first/last node of each region so we can wire gate edges.
+  const regionEndpoints: Array<{ first?: LayoutNode; last?: LayoutNode }> = [];
+
+  regions.forEach((region, regionIndex) => {
+    const bandTop = TOP_PADDING + regionIndex * BAND_HEIGHT;
+    const nodeY = bandTop + NODE_OFFSET_Y;
+
+    regionLabels.push({
+      id: region.id,
+      title: region.title,
+      x: MARGIN_X,
+      y: bandTop + LABEL_OFFSET_Y,
+    });
+
+    const endpoints: { first?: LayoutNode; last?: LayoutNode } = {};
+
+    region.missions.forEach((missionId, missionIndex) => {
+      const node: LayoutNode = {
+        id: missionId,
+        x: MARGIN_X + missionIndex * SPACING_X,
+        y: nodeY,
+        label: Number.parseInt(missionId, 10) || missionIndex + 1,
+        title: `Mission ${missionId}`,
+        regionId: region.id,
+        status: statusFor(missionId),
+      };
+      nodes.push(node);
+      if (missionIndex === 0) endpoints.first = node;
+      endpoints.last = node;
+    });
+
+    regionEndpoints.push(endpoints);
+  });
+
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
+  const edges: LayoutEdge[] = [];
+
+  const pushEdge = (from: LayoutNode, to: LayoutNode, isGate: boolean) => {
+    edges.push({
+      key: `${from.id}-${to.id}`,
+      x1: from.x,
+      y1: from.y,
+      x2: to.x,
+      y2: to.y,
+      completed: from.status === 'done' && to.status === 'done',
+      locked: to.status === 'locked',
+      isGate,
+    });
+  };
+
+  // Sequential edges within each region.
+  regions.forEach((region) => {
+    for (let i = 0; i < region.missions.length - 1; i += 1) {
+      const from = nodeById.get(region.missions[i]);
+      const to = nodeById.get(region.missions[i + 1]);
+      if (from && to) pushEdge(from, to, false);
+    }
+  });
+
+  // Gate edges: last node of region N → first node of region N+1.
+  for (let r = 0; r < regionEndpoints.length - 1; r += 1) {
+    const from = regionEndpoints[r].last;
+    const to = regionEndpoints[r + 1].first;
+    if (from && to) pushEdge(from, to, true);
+  }
+
+  const maxMissions = regions.reduce((max, region) => Math.max(max, region.missions.length), 0);
+  const width = Math.max(MIN_WIDTH, MARGIN_X * 2 + Math.max(0, maxMissions - 1) * SPACING_X);
+  const height = TOP_PADDING + regions.length * BAND_HEIGHT;
+
+  return { nodes, edges, regionLabels, width, height };
+}
