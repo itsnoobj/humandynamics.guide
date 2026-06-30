@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Dark background -->
+  <rect width="1200" height="630" fill="#16140f"/>
+
+  <!-- Subtle vignette -->
+  <radialGradient id="vig" cx="35%" cy="45%" r="75%">
+    <stop offset="0%" stop-color="#1f1c14"/>
+    <stop offset="100%" stop-color="#16140f"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#vig)"/>
+
+  <!-- ============================================= -->
+  <!-- LEFT: brand mark — 3x3 grid (diagonal insight) -->
+  <!-- ============================================= -->
+  <g transform="translate(96, 188)">
+    <!-- Row 1 -->
+    <rect x="0"   y="0"   width="72" height="72" rx="9" fill="#B8860B"/>
+    <rect x="84"  y="0"   width="72" height="72" rx="9" fill="#FAF7F2" opacity="0.08"/>
+    <rect x="168" y="0"   width="72" height="72" rx="9" fill="#FAF7F2" opacity="0.12"/>
+    <!-- Row 2 -->
+    <rect x="0"   y="84"  width="72" height="72" rx="9" fill="#FAF7F2" opacity="0.10"/>
+    <rect x="84"  y="84"  width="72" height="72" rx="9" fill="#B8860B"/>
+    <rect x="168" y="84"  width="72" height="72" rx="9" fill="#FAF7F2" opacity="0.08"/>
+    <!-- Row 3 -->
+    <rect x="0"   y="168" width="72" height="72" rx="9" fill="#FAF7F2" opacity="0.12"/>
+    <rect x="84"  y="168" width="72" height="72" rx="9" fill="#FAF7F2" opacity="0.08"/>
+    <rect x="168" y="168" width="72" height="72" rx="9" fill="#B8860B"/>
+  </g>
+
+  <!-- ============================================= -->
+  <!-- RIGHT: stick figure reaching upward            -->
+  <!-- ============================================= -->
+  <g stroke="#FAF7F2" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9">
+    <!-- figure positioned bottom-right -->
+    <circle cx="1050" cy="430" r="26" fill="none"/>
+    <line x1="1050" y1="456" x2="1050" y2="540"/>
+    <!-- legs -->
+    <line x1="1050" y1="540" x2="1024" y2="592"/>
+    <line x1="1050" y1="540" x2="1076" y2="592"/>
+    <!-- arms reaching up -->
+    <line x1="1050" y1="478" x2="1010" y2="430"/>
+    <line x1="1050" y1="478" x2="1090" y2="430"/>
+  </g>
+  <!-- the gold "insight" the figure reaches for -->
+  <circle cx="1050" cy="388" r="13" fill="#B8860B"/>
+
+  <!-- ============================================= -->
+  <!-- TEXT BLOCK                                     -->
+  <!-- ============================================= -->
+  <!-- Eyebrow -->
+  <text x="392" y="208" font-family="Georgia, 'Times New Roman', serif" font-size="22" letter-spacing="6" fill="#B8860B">A FIELD GUIDE TO</text>
+
+  <!-- Title -->
+  <text x="390" y="300" font-family="Georgia, 'Times New Roman', serif" font-size="92" font-weight="bold" fill="#FAF7F2">Being Human</text>
+
+  <!-- Divider -->
+  <rect x="392" y="338" width="120" height="4" rx="2" fill="#B8860B"/>
+
+  <!-- Subtitle / tagline (two lines) -->
+  <text x="392" y="402" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#cfc8ba">Stories to navigate difficult bosses,</text>
+  <text x="392" y="448" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#cfc8ba">unfair promotions, and hard decisions.</text>
+
+  <!-- Footer wordmark -->
+  <text x="392" y="548" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-weight="bold" fill="#FAF7F2">human<tspan fill="#B8860B">dynamics</tspan><tspan fill="#6b6457">.guide</tspan></text>
+</svg>

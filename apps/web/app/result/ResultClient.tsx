@@ -6,10 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { PrincipleReveal, ReflectionPrompt, ResultCTA } from '@/modules/result';
 import { useProgressStore } from '@/store/progressStore';
 
-/** Props for {@link ResultClient}, supplied by the server component. */
-export interface ResultClientProps {
-  /** Chapter id this result screen completes (drives progress + header). */
-  chapterId: string;
+/** Pre-computed result data for a single chapter, built at static-export time. */
+export interface ResultData {
   /** Chapter title shown alongside the achievement. */
   chapterTitle: string;
   /** The core principle text revealed on completion. */
@@ -24,25 +22,38 @@ export interface ResultClientProps {
   mapHref: string;
 }
 
-function ResultClientInner({
-  chapterId,
-  chapterTitle,
-  principleText,
-  principleSubtext,
-  reflection,
-  totalCount,
-  mapHref,
-}: ResultClientProps) {
+/** Props for {@link ResultClient}, supplied by the server component. */
+export interface ResultClientProps {
+  /** Result data for every chapter, keyed by chapter id. */
+  results: Record<string, ResultData>;
+}
+
+function ResultClientInner({ results }: ResultClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const chapterId = searchParams.get('chapter') ?? '';
   const fromGame = searchParams.get('from') === 'game';
   const completeChapter = useProgressStore((state) => state.completeChapter);
+
+  const data = chapterId ? results[chapterId] : undefined;
 
   // Reaching the result screen means the quiz is complete: mark the chapter
   // done so the world map updates the node to 'done' on return.
   useEffect(() => {
-    completeChapter(chapterId);
-  }, [completeChapter, chapterId]);
+    if (chapterId && data) {
+      completeChapter(chapterId);
+    }
+  }, [completeChapter, chapterId, data]);
+
+  if (!data) {
+    return (
+      <main className="max-w-[480px] mx-auto px-6 py-16 text-center">
+        <p style={{ color: 'var(--color-text-dim)' }}>
+          No result to show. Choose a chapter to begin.
+        </p>
+      </main>
+    );
+  }
 
   const handleContinue = () => {
     if (fromGame) {
@@ -50,13 +61,13 @@ function ResultClientInner({
     } else {
       // Signal the region map to celebrate the path that just opened up.
       localStorage.setItem('pathUnlocked', 'true');
-      router.push(mapHref);
+      router.push(data.mapHref);
     }
   };
 
   const handleGoToMap = () => {
     localStorage.setItem('pathUnlocked', 'true');
-    router.push(mapHref);
+    router.push(data.mapHref);
   };
   const handleGoToGame = () => router.push('/game');
 
@@ -67,15 +78,15 @@ function ResultClientInner({
     >
       <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
       <PrincipleReveal
-        text={principleText}
-        subtext={principleSubtext}
-        correctCount={totalCount}
-        totalCount={totalCount}
+        text={data.principleText}
+        subtext={data.principleSubtext}
+        correctCount={data.totalCount}
+        totalCount={data.totalCount}
         readTime="~5 min read"
         chapterNumber={chapterId}
-        chapterTitle={chapterTitle}
+        chapterTitle={data.chapterTitle}
       />
-      <ReflectionPrompt question={reflection} />
+      <ReflectionPrompt question={data.reflection} />
       <ResultCTA
         onContinue={handleContinue}
         fromGame={fromGame}
@@ -87,9 +98,10 @@ function ResultClientInner({
 }
 
 /**
- * Client shell for the result screen. Receives server-loaded quiz data as
- * props and handles the interactive completion flow (progress store + routing).
- * Wrapped in Suspense because it reads search params (`from`).
+ * Client shell for the result screen. Receives the build-time result data map
+ * as props, reads the `chapter` (and `from`) query params from the URL, and
+ * handles the interactive completion flow (progress store + routing). Wrapped
+ * in Suspense because it reads search params.
  */
 export function ResultClient(props: ResultClientProps) {
   return (

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- PWA icon - diagonal insight grid on dark background -->
+  <rect width="512" height="512" rx="96" fill="#16140f"/>
+
+  <!-- Gold diagonal = the pattern you learn to see -->
+  <!-- Faint cream = hidden forces -->
+
+  <!-- Row 1 -->
+  <rect x="96" y="96" width="96" height="96" rx="18" fill="#DAA520"/>
+  <rect x="208" y="96" width="96" height="96" rx="18" fill="#FAF7F2" opacity="0.08"/>
+  <rect x="320" y="96" width="96" height="96" rx="18" fill="#FAF7F2" opacity="0.12"/>
+
+  <!-- Row 2 -->
+  <rect x="96" y="208" width="96" height="96" rx="18" fill="#FAF7F2" opacity="0.1"/>
+  <rect x="208" y="208" width="96" height="96" rx="18" fill="#DAA520"/>
+  <rect x="320" y="208" width="96" height="96" rx="18" fill="#FAF7F2" opacity="0.08"/>
+
+  <!-- Row 3 -->
+  <rect x="96" y="320" width="96" height="96" rx="18" fill="#FAF7F2" opacity="0.12"/>
+  <rect x="208" y="320" width="96" height="96" rx="18" fill="#FAF7F2" opacity="0.08"/>
+  <rect x="320" y="320" width="96" height="96" rx="18" fill="#DAA520"/>
+</svg>

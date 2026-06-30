@@ -222,6 +222,57 @@ async function findContentFile(id: string, suffix: string): Promise<string | nul
 }
 
 /**
+ * List every chapter id that has a file ending in `suffix` across all
+ * `part-*` directories. When `exclude` is given, files ending in it are
+ * skipped (used so `.json` enumeration doesn't pick up `.quiz.json`).
+ *
+ * Used at build time by `generateStaticParams` to pre-render every available
+ * chapter/quiz page for static export.
+ */
+async function listContentIds(suffix: string, exclude?: string): Promise<string[]> {
+  const root = await resolveContentRoot();
+
+  let entries: import('fs').Dirent[];
+  try {
+    entries = await fs.readdir(root, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const partDirs = entries
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith('part-'))
+    .map((entry) => entry.name);
+
+  const ids = new Set<string>();
+  for (const part of partDirs) {
+    let files: string[];
+    try {
+      files = await fs.readdir(path.join(root, part));
+    } catch {
+      continue;
+    }
+    for (const file of files) {
+      if (exclude && file.endsWith(exclude)) continue;
+      if (file.endsWith(suffix)) {
+        ids.add(file.slice(0, -suffix.length));
+      }
+    }
+  }
+
+  return [...ids];
+}
+
+/** Ids of all chapters that have a `{id}.json` content file. */
+export async function listChapterIds(): Promise<string[]> {
+  return listContentIds('.json', '.quiz.json');
+}
+
+/** Ids of all chapters that have a `{id}.quiz.json` file. */
+export async function listQuizIds(): Promise<string[]> {
+  return listContentIds('.quiz.json');
+}
+
+/**
  * Read and JSON-parse a content file, returning `null` (and logging) on any
  * read or parse failure rather than throwing.
  */
