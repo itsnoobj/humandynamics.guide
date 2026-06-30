@@ -55,10 +55,10 @@ export default function LandingPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        paddingTop: '8vh',
-        paddingBottom: '2rem',
+        paddingTop: '6vh',
         paddingLeft: '1.5rem',
         paddingRight: '1.5rem',
+        paddingBottom: '0',
         background: 'var(--color-bg)',
         fontFamily: 'var(--font-primary)',
         textAlign: 'center',
@@ -66,10 +66,10 @@ export default function LandingPage() {
         overflow: 'hidden',
       }}
     >
-      {/* Background image — switches with theme */}
+      {/* Background image */}
       <div className="landing-bg" />
 
-      {/* Content */}
+      {/* Content — upper area */}
       <div style={{ maxWidth: '700px', position: 'relative', zIndex: 1 }}>
         <h1
           style={{
@@ -100,47 +100,21 @@ export default function LandingPage() {
 
         <p
           style={{
-            marginTop: '2rem',
-            fontSize: '1.05rem',
-            lineHeight: 1.7,
+            marginTop: '1.5rem',
+            fontSize: '1rem',
+            lineHeight: 1.6,
             color: 'var(--color-text-dim)',
-            maxWidth: '460px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
           }}
         >
-          Why do people resist change? Why does ego destroy teams?
-          <br />
           Learn through stories from history, epics, and real life.
         </p>
 
-        {/* Sample mission — curiosity hook */}
-        <div
-          style={{
-            marginTop: '1.5rem',
-            padding: '0.7rem 1.2rem',
-            border: '1px solid var(--color-border)',
-            display: 'inline-block',
-            fontSize: '0.85rem',
-            color: 'var(--color-text)',
-            fontStyle: 'italic',
-            background: 'var(--color-bg)',
-          }}
-        >
-          <span
-            style={{ color: 'var(--color-text-dim)', fontStyle: 'normal', marginRight: '0.5rem' }}
-          >
-            e.g.
-          </span>
-          &ldquo;{SAMPLE_MISSIONS[sampleIndex]}&rdquo;
-        </div>
-
-        {/* CTAs with previews */}
+        {/* CTAs with previews — moved up */}
         <div
           style={{
             display: 'flex',
             gap: '1.5rem',
-            marginTop: '3rem',
+            marginTop: '2rem',
             maxWidth: '600px',
             marginLeft: 'auto',
             marginRight: 'auto',
@@ -337,6 +311,31 @@ export default function LandingPage() {
             </div>
           </Link>
         </div>
+      </div>
+
+      {/* Sample mission — positioned over the background image area at bottom */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '12%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1,
+          padding: '0.6rem 1.2rem',
+          border: '1px solid var(--color-border)',
+          fontSize: '0.85rem',
+          color: 'var(--color-text)',
+          fontStyle: 'italic',
+          background: 'var(--color-bg)',
+          opacity: 0.9,
+        }}
+      >
+        <span
+          style={{ color: 'var(--color-text-dim)', fontStyle: 'normal', marginRight: '0.5rem' }}
+        >
+          e.g.
+        </span>
+        &ldquo;{SAMPLE_MISSIONS[sampleIndex]}&rdquo;
       </div>
 
       <style>{`
