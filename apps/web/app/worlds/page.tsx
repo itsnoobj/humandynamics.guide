@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { WorldLandscape } from '@/modules/worlds';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
 import { worlds } from '@/lib/hierarchy';
@@ -18,6 +19,9 @@ export default function WorldsPage() {
     >
       <ThemeToggle />
       <div style={{ maxWidth: '1040px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
+        <Link href="/" style={{ color: 'var(--color-text)', fontSize: '0.9rem', textDecoration: 'none' }}>
+          🏠 Home
+        </Link>
         <header style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0 }}>
             A Field Guide to Being Human

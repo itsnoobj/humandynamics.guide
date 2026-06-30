@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Field Guide',
+    title: 'Human Dynamics',
   },
   icons: {
     apple: '/icon-192.png',

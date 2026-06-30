@@ -70,12 +70,17 @@ function RegionPageInner() {
     >
       <ThemeToggle />
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
-        <Link
-          href={`/worlds/${world.id}`}
-          style={{ color: 'var(--color-text)', fontSize: '0.9rem' }}
-        >
-          ← {world.worldName}
-        </Link>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <Link href="/" style={{ color: 'var(--color-text)', fontSize: '0.9rem', textDecoration: 'none' }}>
+            🏠
+          </Link>
+          <Link
+            href={`/worlds/${world.id}`}
+            style={{ color: 'var(--color-text)', fontSize: '0.9rem', textDecoration: 'none' }}
+          >
+            ← {world.worldName}
+          </Link>
+        </div>
 
         <header style={{ textAlign: 'center', margin: 'var(--spacing-md) 0 var(--spacing-lg)' }}>
           <div style={{ fontSize: '2.4rem', lineHeight: 1 }} aria-hidden="true">

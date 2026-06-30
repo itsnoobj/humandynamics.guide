@@ -45,7 +45,10 @@ function QuizClientInner({
       style={{ animation: 'quiz-page-in 0.3s ease-out' }}
     >
       {/* Nav bar */}
-      <nav className="sticky top-0 z-10 flex items-center py-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+      <nav className="sticky top-0 z-10 flex items-center gap-3 py-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+        <a href="/" className="text-sm no-underline" style={{ color: 'var(--color-text)' }}>
+          🏠
+        </a>
         <button
           onClick={() => router.back()}
           className="text-sm"

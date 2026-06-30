@@ -9,6 +9,22 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
     exclude: ['e2e/**', 'node_modules/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'lcov'],
+      reportsDirectory: './coverage',
+      include: ['modules/**', 'lib/**', 'shared/**', 'store/**'],
+      exclude: [
+        '**/__tests__/**',
+        '**/*.test.*',
+        '**/e2e/**',
+        '**/*.d.ts',
+        'app/layout.tsx',
+        'app/theme-provider.tsx',
+        'app/ServiceWorkerRegister.tsx',
+        'modules/*/index.ts',
+      ],
+    },
   },
   resolve: {
     alias: {

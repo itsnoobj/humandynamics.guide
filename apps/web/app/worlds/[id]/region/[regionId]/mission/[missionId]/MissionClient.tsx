@@ -33,7 +33,10 @@ function MissionClientInner({ chapter, worldId, regionId, missionId }: MissionCl
 
   return (
     <main className="max-w-[620px] mx-auto px-4 pb-12">
-      <nav className="sticky top-0 z-10 flex items-center py-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+      <nav className="sticky top-0 z-10 flex items-center gap-3 py-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+        <Link href="/" className="text-sm text-[var(--color-text)] no-underline">
+          🏠
+        </Link>
         <Link href={backHref} className="text-sm text-[var(--color-text)]">
           {backLabel}
         </Link>

@@ -62,9 +62,14 @@ function WorldPageInner() {
     >
       <ThemeToggle />
       <div style={{ maxWidth: '880px', margin: '0 auto', padding: 'var(--spacing-lg)' }}>
-        <Link href="/worlds" style={{ color: 'var(--color-text)', fontSize: '0.9rem' }}>
-          ← Worlds
-        </Link>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <Link href="/" style={{ color: 'var(--color-text)', fontSize: '0.9rem', textDecoration: 'none' }}>
+            🏠
+          </Link>
+          <Link href="/worlds" style={{ color: 'var(--color-text)', fontSize: '0.9rem', textDecoration: 'none' }}>
+            ← Worlds
+          </Link>
+        </div>
 
         <header style={{ textAlign: 'center', margin: 'var(--spacing-md) 0 var(--spacing-lg)' }}>
           <div style={{ fontSize: '2.6rem', lineHeight: 1 }} aria-hidden="true">

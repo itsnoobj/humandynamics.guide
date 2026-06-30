@@ -17,3 +17,6 @@ content/chapters/part-*/[0-9]*.md
 coverage/
 .playwright-mcp
 .venv*/
+
+# Debug screenshots
+card-flip-*.png

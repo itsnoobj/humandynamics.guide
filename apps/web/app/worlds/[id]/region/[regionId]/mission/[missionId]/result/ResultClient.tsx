@@ -3,6 +3,8 @@
 import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import Link from 'next/link';
+
 import { PrincipleReveal, ReflectionPrompt, ResultCTA } from '@/modules/result';
 import { useProgressStore } from '@/store/progressStore';
 
@@ -78,6 +80,9 @@ function ResultClientInner({ data, chapterId, mapHref }: ResultClientProps) {
       style={{ animation: 'fadeIn 0.3s ease-out' }}
     >
       <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
+      <Link href="/" className="text-sm no-underline block mb-4" style={{ color: 'var(--color-text)', textAlign: 'left' }}>
+        🏠 Home
+      </Link>
       <PrincipleReveal
         text={data.principleText}
         subtext={data.principleSubtext}

@@ -48,18 +48,18 @@
   <!-- TEXT BLOCK                                     -->
   <!-- ============================================= -->
   <!-- Eyebrow -->
-  <text x="392" y="208" font-family="Georgia, 'Times New Roman', serif" font-size="22" letter-spacing="6" fill="#B8860B">A FIELD GUIDE TO</text>
+  <text x="392" y="208" font-family="'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif" font-size="22" letter-spacing="6" fill="#B8860B" font-weight="600">A FIELD GUIDE TO</text>
 
   <!-- Title -->
-  <text x="390" y="300" font-family="Georgia, 'Times New Roman', serif" font-size="92" font-weight="bold" fill="#FAF7F2">Being Human</text>
+  <text x="390" y="300" font-family="'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif" font-size="92" font-weight="700" fill="#FAF7F2">Being Human</text>
 
   <!-- Divider -->
   <rect x="392" y="338" width="120" height="4" rx="2" fill="#B8860B"/>
 
   <!-- Subtitle / tagline (two lines) -->
-  <text x="392" y="402" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#cfc8ba">Stories to navigate difficult bosses,</text>
-  <text x="392" y="448" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#cfc8ba">unfair promotions, and hard decisions.</text>
+  <text x="392" y="402" font-family="'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif" font-size="32" fill="#cfc8ba">Stories to navigate difficult bosses,</text>
+  <text x="392" y="448" font-family="'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif" font-size="32" fill="#cfc8ba">unfair promotions, and hard decisions.</text>
 
   <!-- Footer wordmark -->
-  <text x="392" y="548" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-weight="bold" fill="#FAF7F2">human<tspan fill="#B8860B">dynamics</tspan><tspan fill="#6b6457">.guide</tspan></text>
+  <text x="392" y="548" font-family="'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif" font-size="24" font-weight="700" fill="#FAF7F2">human<tspan fill="#B8860B">dynamics</tspan><tspan fill="#6b6457">.guide</tspan></text>
 </svg>
