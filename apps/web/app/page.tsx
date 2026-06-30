@@ -377,19 +377,19 @@ export default function LandingPage() {
 
         {/* Sample mission — below cards */}
         <div
+          className="sample-mission"
           style={{
-            marginTop: '4rem',
-            padding: '0.6rem 1.2rem',
+            marginTop: '5rem',
+            padding: '0.6rem 0',
             border: 'none',
             fontSize: '0.85rem',
             color: 'var(--color-text)',
             fontStyle: 'italic',
             background: 'none',
-            display: 'inline-block',
-            marginLeft: 'auto',
+            display: 'block',
             textAlign: 'right',
-            alignSelf: 'flex-end',
-            paddingRight: '0',
+            maxWidth: '25ch',
+            marginLeft: 'auto',
           }}
         >
           <span
@@ -432,7 +432,7 @@ export default function LandingPage() {
           transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
           display: block;
         }
-        @media (max-width: 600px) { .glimpse-card { min-width: 100% !important; } .glimpse-card svg { max-height: 55px !important; } .glimpse-card > div { padding: 0.4rem 0.6rem !important; } .click-hand { opacity: 0.6; width: 18px !important; height: 18px !important; top: -8px !important; right: -8px !important; }
+        @media (max-width: 600px) { .sample-mission { margin-top: 2rem !important; } .glimpse-card { min-width: 100% !important; } .glimpse-card svg { max-height: 55px !important; } .glimpse-card > div { padding: 0.4rem 0.6rem !important; } .click-hand { opacity: 0.6; width: 18px !important; height: 18px !important; top: -8px !important; right: -8px !important; }
          } .glimpse-card:hover {
           border-color: rgba(218, 165, 32, 0.4) !important;
           transform: translateY(-3px);
