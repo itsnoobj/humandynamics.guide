@@ -1,27 +1,20 @@
 'use client';
 
 export interface ResultCTAProps {
-  /** Invoked when the learner clicks the primary call-to-action. */
   onContinue: () => void;
-  /** Whether the result was reached from the game (vs. the map). */
   fromGame: boolean;
-  /**
-   * Invoked when the learner clicks "Share this principle". Optional — sharing
-   * is not wired up yet, so this defaults to a no-op.
-   */
+  onGoToMap?: () => void;
+  onGoToGame?: () => void;
   onShare?: () => void;
 }
 
-/**
- * Stacked call-to-action shown at the end of a result screen.
- *
- * A solid, full-width primary button returns the learner to the game
- * ("Continue Running →") or the chapter map ("Back to Map ★"), with an outline
- * "Share this principle" secondary button beneath it.
- */
-export function ResultCTA({ onContinue, fromGame, onShare }: ResultCTAProps) {
-  const label = fromGame ? 'Continue Running →' : 'Back to Map ★';
-
+export function ResultCTA({
+  onContinue,
+  fromGame,
+  onGoToMap,
+  onGoToGame,
+  onShare,
+}: ResultCTAProps) {
   return (
     <div
       style={{
@@ -31,6 +24,7 @@ export function ResultCTA({ onContinue, fromGame, onShare }: ResultCTAProps) {
         marginTop: 'var(--spacing-lg)',
       }}
     >
+      {/* Primary CTA — context-aware */}
       <button
         type="button"
         onClick={onContinue}
@@ -47,7 +41,7 @@ export function ResultCTA({ onContinue, fromGame, onShare }: ResultCTAProps) {
           cursor: 'pointer',
         }}
       >
-        {label}
+        {fromGame ? 'Continue Running →' : 'Back to Map'}
       </button>
 
       {fromGame && (
@@ -60,13 +54,28 @@ export function ResultCTA({ onContinue, fromGame, onShare }: ResultCTAProps) {
             color: 'var(--color-text-dim)',
           }}
         >
-          Next obstacle awaits
+          Obstacle cleared — next one awaits
         </p>
       )}
 
+      {!fromGame && (
+        <p
+          style={{
+            margin: 0,
+            textAlign: 'center',
+            fontSize: '0.8rem',
+            fontStyle: 'italic',
+            color: 'var(--color-text-dim)',
+          }}
+        >
+          Next chapter unlocked on the map
+        </p>
+      )}
+
+      {/* Secondary: the OTHER option */}
       <button
         type="button"
-        onClick={onShare}
+        onClick={fromGame ? onGoToMap : onGoToGame}
         style={{
           width: '100%',
           padding: 'var(--spacing-md) var(--spacing-lg)',
@@ -75,9 +84,30 @@ export function ResultCTA({ onContinue, fromGame, onShare }: ResultCTAProps) {
           backgroundColor: 'transparent',
           color: 'var(--color-text)',
           fontFamily: 'var(--font-primary)',
-          fontSize: '1rem',
-          fontWeight: 600,
+          fontSize: '0.9rem',
+          fontWeight: 500,
           cursor: 'pointer',
+        }}
+      >
+        {fromGame ? 'Or explore the Map' : 'Or play the Game →'}
+      </button>
+
+      {/* Share */}
+      <button
+        type="button"
+        onClick={onShare}
+        style={{
+          width: '100%',
+          padding: 'var(--spacing-sm) var(--spacing-lg)',
+          border: 'none',
+          borderRadius: 'var(--radius)',
+          backgroundColor: 'transparent',
+          color: 'var(--color-text-dim)',
+          fontFamily: 'var(--font-primary)',
+          fontSize: '0.85rem',
+          fontWeight: 400,
+          cursor: 'pointer',
+          textDecoration: 'underline',
         }}
       >
         Share this principle

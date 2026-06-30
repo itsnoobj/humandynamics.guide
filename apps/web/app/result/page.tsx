@@ -29,6 +29,9 @@ function ResultPageInner() {
     }
   };
 
+  const handleGoToMap = () => router.push('/map');
+  const handleGoToGame = () => router.push('/game');
+
   const totalCount = quizData.challenges.length;
 
   return (
@@ -43,7 +46,12 @@ function ResultPageInner() {
         chapterTitle={chapterData.title}
       />
       <ReflectionPrompt question={quizData.reflection} />
-      <ResultCTA onContinue={handleContinue} fromGame={fromGame} />
+      <ResultCTA
+        onContinue={handleContinue}
+        fromGame={fromGame}
+        onGoToMap={handleGoToMap}
+        onGoToGame={handleGoToGame}
+      />
     </main>
   );
 }
