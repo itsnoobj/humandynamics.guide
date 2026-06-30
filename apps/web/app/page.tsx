@@ -138,6 +138,20 @@ export default function LandingPage() {
             }}
           >
             {/* Click indicator */}
+
+            <svg
+              className="blob-border"
+              viewBox="0 0 200 120"
+              fill="none"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M20 8 C60 2, 100 5, 150 4 C175 3, 192 12, 195 30 C198 55, 196 80, 192 95 C188 108, 170 116, 140 117 C100 118, 60 119, 30 116 C12 114, 4 105, 3 90 C2 70, 1 45, 4 25 C7 12, 14 9, 20 8 Z"
+                stroke="var(--color-text-dim)"
+                strokeWidth="1.5"
+                strokeDasharray="4 3"
+              />
+            </svg>
             <svg
               className="click-hand"
               viewBox="0 0 24 24"
@@ -230,6 +244,20 @@ export default function LandingPage() {
             }}
           >
             {/* Click indicator */}
+
+            <svg
+              className="blob-border"
+              viewBox="0 0 200 120"
+              fill="none"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M20 8 C60 2, 100 5, 150 4 C175 3, 192 12, 195 30 C198 55, 196 80, 192 95 C188 108, 170 116, 140 117 C100 118, 60 119, 30 116 C12 114, 4 105, 3 90 C2 70, 1 45, 4 25 C7 12, 14 9, 20 8 Z"
+                stroke="var(--color-text-dim)"
+                strokeWidth="1.5"
+                strokeDasharray="4 3"
+              />
+            </svg>
             <svg
               className="click-hand"
               viewBox="0 0 24 24"
@@ -384,19 +412,17 @@ export default function LandingPage() {
         .glimpse-card {
           position: relative;
         }
-        .glimpse-card::before {
-          content: '';
+        .glimpse-card .blob-border {
           position: absolute;
-          inset: -4px;
-          border: 2px dashed var(--color-text-dim);
-          opacity: 0.4;
-          border-radius: 2px 8px 4px 6px;
-          transform: rotate(-0.3deg);
+          inset: -8px;
+          width: calc(100% + 16px);
+          height: calc(100% + 16px);
           pointer-events: none;
+          opacity: 0.4;
+          transition: opacity 0.3s;
         }
-        .glimpse-card:hover::before {
-          border-color: var(--color-gold);
-          opacity: 0.7;
+        .glimpse-card:hover .blob-border {
+          opacity: 0.8;
         }
         .click-hand {
           animation: clickShake 1.5s ease-in-out infinite;
