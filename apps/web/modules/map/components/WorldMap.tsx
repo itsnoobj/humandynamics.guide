@@ -6,15 +6,30 @@ import { useMapProgress } from '../hooks/useMapProgress';
 import { MapPath } from './MapPath';
 import { MapNode } from './MapNode';
 import { PlayerIndicator } from './PlayerIndicator';
+import { PathUnlocked } from './PathUnlocked';
+
+/** Props for {@link WorldMap}. */
+export interface WorldMapProps {
+  /**
+   * When provided, a "Path Unlocked" celebration is shown over the map
+   * announcing the route from `from` to `to`. The parent owns this state and
+   * should clear it via {@link WorldMapProps.onUnlockedDone}.
+   */
+  showUnlocked?: { from: string; to: string } | null;
+  /** Called when the unlock celebration finishes or is dismissed. */
+  onUnlockedDone?: () => void;
+}
 
 /**
  * The Super Mario World style overworld map.
  *
  * Renders dotted path segments between level nodes, the nodes themselves
  * (gold/done, white/current, grey/locked), and a bouncing indicator above the
- * current node. Clicking a non-locked node navigates to its chapter.
+ * current node. Clicking a non-locked node navigates to its chapter. When
+ * {@link WorldMapProps.showUnlocked} is set, a celebratory overlay is layered
+ * on top of the map.
  */
-export function WorldMap() {
+export function WorldMap({ showUnlocked, onUnlockedDone }: WorldMapProps = {}) {
   const router = useRouter();
   const statuses = useMapProgress();
 
@@ -39,6 +54,7 @@ export function WorldMap() {
     <div>
       <div
         style={{
+          position: 'relative',
           maxWidth: '100%',
           overflowX: 'auto',
           WebkitOverflowScrolling: 'touch',
@@ -78,6 +94,14 @@ export function WorldMap() {
 
           {currentNode && <PlayerIndicator x={currentNode.x} y={currentNode.y} />}
         </svg>
+
+        {showUnlocked && (
+          <PathUnlocked
+            fromNode={showUnlocked.from}
+            toNode={showUnlocked.to}
+            onDone={() => onUnlockedDone?.()}
+          />
+        )}
       </div>
 
       <p

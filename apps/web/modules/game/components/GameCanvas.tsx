@@ -11,6 +11,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { GameHUD } from './GameHUD';
 import { HitInterstitial } from './HitInterstitial';
 import { StartScreen } from './StartScreen';
+import { ObstacleCleared } from './ObstacleCleared';
 
 /**
  * Per-theme canvas palette. The DOM overlays (start screen, HUD, interstitial)
@@ -86,6 +87,10 @@ export function GameCanvas() {
   const sizeRef = useRef({ width: 0, height: 0 });
   const imagesRef = useRef<Partial<Record<AssetKey, HTMLImageElement>>>({});
   const [assetsReady, setAssetsReady] = useState(false);
+  // True when the player returned via `/game?resume=1` after solving a chapter.
+  // While set, the "Obstacle Cleared" celebration shows in place of the start
+  // screen and the run begins only once it is dismissed.
+  const [showCleared, setShowCleared] = useState(false);
 
   const game = useGameState();
   // Mirror the phase into a ref so the frame callback reads the live value.
@@ -103,6 +108,16 @@ export function GameCanvas() {
   }, [theme]);
 
   const [, forceTick] = useState(0);
+
+  // Detect a resume entry (`/game?resume=1`) on the client. Reading from
+  // `window.location` avoids the Suspense boundary that `useSearchParams`
+  // would otherwise require here.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('resume') === '1') {
+      setShowCleared(true);
+    }
+  }, []);
 
   /** Size the canvas to its container, accounting for devicePixelRatio. */
   const resize = useCallback(() => {
@@ -365,6 +380,19 @@ export function GameCanvas() {
   const activeChapter =
     gameChapters[game.currentChapterIndex % gameChapters.length] ?? gameChapters[0];
 
+  // The chapter the player just solved before resuming — the one *before* the
+  // current index. Clamped so a fresh resume (index 0) surfaces the first
+  // chapter, which is what the result screen marks complete.
+  const completedChapterIndex = Math.max(0, game.currentChapterIndex - 1);
+  const completedChapter =
+    gameChapters[completedChapterIndex % gameChapters.length] ?? gameChapters[0];
+
+  // Dismiss the celebration and kick off the run.
+  const handleClearedDone = useCallback(() => {
+    setShowCleared(false);
+    handleStart();
+  }, [handleStart]);
+
   return (
     <div
       style={{
@@ -402,7 +430,13 @@ export function GameCanvas() {
         </div>
       )}
 
-      {game.phase === 'idle' && assetsReady && <StartScreen onStart={handleStart} />}
+      {game.phase === 'idle' && assetsReady && !showCleared && (
+        <StartScreen onStart={handleStart} />
+      )}
+
+      {game.phase === 'idle' && assetsReady && showCleared && (
+        <ObstacleCleared chapterTitle={completedChapter.title} onDone={handleClearedDone} />
+      )}
 
       {game.phase === 'hit' && (
         <HitInterstitial

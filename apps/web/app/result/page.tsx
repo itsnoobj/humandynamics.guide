@@ -25,11 +25,16 @@ function ResultPageInner() {
     if (fromGame) {
       router.push('/game?resume=1');
     } else {
+      // Signal the map to celebrate the path that just opened up.
+      localStorage.setItem('pathUnlocked', 'true');
       router.push('/map');
     }
   };
 
-  const handleGoToMap = () => router.push('/map');
+  const handleGoToMap = () => {
+    localStorage.setItem('pathUnlocked', 'true');
+    router.push('/map');
+  };
   const handleGoToGame = () => router.push('/game');
 
   const totalCount = quizData.challenges.length;

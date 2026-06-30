@@ -1,5 +1,9 @@
 export { WorldMap } from './components/WorldMap';
+export type { WorldMapProps } from './components/WorldMap';
 export { MapHeader } from './components/MapHeader';
+
+export { PathUnlocked } from './components/PathUnlocked';
+export type { PathUnlockedProps } from './components/PathUnlocked';
 
 export { MapNode } from './components/MapNode';
 export type { MapNodeProps, MapNodeStatus } from './components/MapNode';

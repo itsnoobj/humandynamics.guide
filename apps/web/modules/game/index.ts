@@ -3,6 +3,9 @@ export { GameCanvas } from './components/GameCanvas';
 export { HitInterstitial } from './components/HitInterstitial';
 export type { HitInterstitialProps } from './components/HitInterstitial';
 
+export { ObstacleCleared } from './components/ObstacleCleared';
+export type { ObstacleClearedProps } from './components/ObstacleCleared';
+
 export { StartScreen } from './components/StartScreen';
 export type { StartScreenProps } from './components/StartScreen';
 
