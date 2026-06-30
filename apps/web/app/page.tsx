@@ -351,9 +351,12 @@ export default function LandingPage() {
           pointer-events: none;
         }
         [data-theme="dark"] .landing-bg {
-          background-color: #0D0D0D;
+          background-color: #000000;
           background-image: url('/assets/bg/landing-dark.png');
-          opacity: 0.4;
+          opacity: 1;
+        }
+        [data-theme="dark"] main {
+          background: #000000 !important;
         }
         .glimpse-card {
           transition: border-color 0.2s, transform 0.2s;
