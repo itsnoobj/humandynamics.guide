@@ -425,14 +425,16 @@ export default function LandingPage() {
           opacity: 0.8;
         }
         .click-hand {
-          animation: clickShake 1.5s ease-in-out infinite;
+          animation: clickShake 0.8s ease-in-out infinite;
         }
         @keyframes clickShake {
-          0%, 100% { transform: translateX(0); }
-          20% { transform: translateX(2px); }
-          40% { transform: translateX(-2px); }
-          60% { transform: translateX(1.5px); }
-          80% { transform: translateX(-1px); }
+          0%, 100% { transform: translateX(0) rotate(0deg); }
+          15% { transform: translateX(4px) rotate(5deg); }
+          30% { transform: translateX(-3px) rotate(-4deg); }
+          45% { transform: translateX(3px) rotate(3deg); }
+          60% { transform: translateX(-4px) rotate(-5deg); }
+          75% { transform: translateX(2px) rotate(2deg); }
+          90% { transform: translateX(-2px) rotate(-2deg); }
         }
       `}</style>
     </main>
