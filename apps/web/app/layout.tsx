@@ -65,12 +65,39 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+import Link from 'next/link';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="dark" className={ibmPlexSans.variable}>
       <body>
         <ServiceWorkerRegister />
         <ThemeProvider>
+          <nav
+            style={{
+              position: 'fixed',
+              top: '1rem',
+              right: '6.5rem',
+              zIndex: 50,
+            }}
+          >
+            <Link
+              href="/why"
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: 'var(--color-text-dim)',
+                textDecoration: 'none',
+                padding: '0.4rem 0.7rem',
+                border: '1px solid var(--color-border)',
+                borderRadius: '9999px',
+                background: 'var(--color-surface)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Why this?
+            </Link>
+          </nav>
           <ThemeToggle />
           <ShareStoryButton />
           {children}

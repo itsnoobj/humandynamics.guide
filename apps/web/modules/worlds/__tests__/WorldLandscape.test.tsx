@@ -19,8 +19,10 @@ vi.mock('@/lib/hierarchy', () => ({
 function makeWorld(id: number, name: string) {
   return {
     id,
+    title: name,
     worldName: name,
     tagline: `Tagline ${id}`,
+    landscape: 'default',
     accent: '#DAA520',
     regions: [{ id: `r${id}`, title: `R${id}`, emoji: '🌍', description: 'D', missions: [`${id}`] }],
   };
