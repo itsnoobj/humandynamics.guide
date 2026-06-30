@@ -10,7 +10,7 @@
   "sections": [
     {
       "type": "situation",
-      "content": "You shipped the bug. You missed the deadline. And now, in the moment when the cleanest move is two words — 'my mistake' — your mouth does something else.\n\nIt explains. It points, gently, at the timeline, the unclear brief, the other team. Every word is technically true. And every word is a small wall you're building between yourself and the simple sentence you can't quite say."
+      "content": "The bug shipped. The deadline slipped. And now, in the moment when the cleanest move is two words — 'my mistake' — something else comes out instead.\n\nExplanations. Gentle pointing at the timeline, the unclear brief, the other team. Every word technically true. And every word a small wall between the person speaking and the simple sentence they can't quite say."
     },
     {
       "type": "story",
@@ -29,7 +29,7 @@
     {
       "type": "psychology",
       "title": "Why It Happens",
-      "content": "The ego is the immune system of your self-story: I am capable, I am good, I know what I'm doing. A mistake reads as an infection, and the ego attacks it before you're even aware — with denial, blame, and quiet revision.\n\nTwo named effects drive it. Self-serving bias: we automatically credit success to our skill and failure to circumstance. You don't choose the deflection; it arrives pre-written and feels like the truth. And the social-pain overlap (Eisenberger et al., 2003): being wrong in front of others activates the same neural regions as physical pain, so 'I made a mistake' triggers a flinch as real as touching a hot stove. The cruel irony — the people we trust most are precisely the ones who admit errors easily."
+      "content": "The ego is the immune system of the self-story: I am capable, I am good, I know what I'm doing. A mistake reads as an infection, and the ego attacks it before awareness kicks in — with denial, blame, and quiet revision.\n\nTwo named effects drive it. Self-serving bias: we automatically credit success to skill and failure to circumstance. The deflection arrives pre-written and feels like the truth. And the social-pain overlap (Eisenberger et al., 2003): being wrong in front of others activates the same neural regions as physical pain, so 'I made a mistake' triggers a flinch as real as touching a hot stove. The cruel irony — the people we trust most are precisely the ones who admit errors easily."
     },
     {
       "type": "move",
