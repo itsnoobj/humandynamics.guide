@@ -14,16 +14,32 @@ const wrapStyle: React.CSSProperties = {
 
 const btnStyle: React.CSSProperties = {
   background: 'none',
-  border: 'none',
+  border: '2px solid var(--color-border)',
+  borderRadius: '50%',
   cursor: 'pointer',
   color: 'var(--color-text)',
-  minHeight: '44px',
-  minWidth: '44px',
-  padding: '0 var(--spacing-sm)',
+  width: '48px',
+  height: '48px',
+  flexShrink: 0,
+  padding: 0,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  transition: 'border-color 0.15s ease',
 };
+
+const PlayIcon = (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+    <polygon points="3,1 13,8 3,15" />
+  </svg>
+);
+
+const PauseIcon = (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+    <rect x="2" y="1" width="4" height="14" />
+    <rect x="10" y="1" width="4" height="14" />
+  </svg>
+);
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds)) return '0:00';
@@ -57,8 +73,19 @@ export function AudioPlayer({ src }: { src: string }) {
 
   return (
     <div style={wrapStyle}>
-      <button type="button" onClick={toggle} aria-label={label} style={btnStyle}>
-        {label}
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={label}
+        style={btnStyle}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = 'var(--color-gold)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'var(--color-border)';
+        }}
+      >
+        {playing ? PauseIcon : PlayIcon}
       </button>
       <input
         type="range"
