@@ -397,11 +397,11 @@ export default function LandingPage() {
           animation: clickShake 1.5s ease-in-out infinite;
         }
         @keyframes clickShake {
-          0%, 100% { transform: translate(0, 0); }
-          20% { transform: translate(0, -2px); }
-          40% { transform: translate(0, 2px); }
-          60% { transform: translate(0, -1px); }
-          80% { transform: translate(0, 1px); }
+          0%, 100% { transform: translateX(0); }
+          20% { transform: translateX(2px); }
+          40% { transform: translateX(-2px); }
+          60% { transform: translateX(1.5px); }
+          80% { transform: translateX(-1px); }
         }
       `}</style>
     </main>
