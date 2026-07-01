@@ -6,7 +6,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useProgressStore } from '@/store/progressStore';
 import type { World } from '@/lib/hierarchy';
@@ -172,6 +172,7 @@ function WorldZone({
   progressed,
   locked,
   hovered,
+  navigating,
   onHover,
   onSelect,
 }: {
@@ -181,6 +182,7 @@ function WorldZone({
   progressed: boolean;
   locked: boolean;
   hovered: boolean;
+  navigating: boolean;
   onHover: (id: number | null) => void;
   onSelect: (id: number) => void;
 }) {
@@ -204,9 +206,10 @@ function WorldZone({
       onBlur={locked ? undefined : () => onHover(null)}
       style={{
         cursor: locked ? 'default' : 'pointer',
-        opacity: locked ? 0.35 : 1,
+        opacity: locked ? 0.35 : navigating ? 0.6 : 1,
         filter: hovered && !locked ? `drop-shadow(0 0 8px ${world.accent})` : 'none',
-        transition: 'filter 150ms ease',
+        transition: 'filter 150ms ease, opacity 150ms ease',
+        animation: navigating ? 'zone-pulse 0.6s ease-in-out infinite' : 'none',
       }}
     >
       {/* Generous transparent hit area. */}
@@ -263,6 +266,20 @@ export function WorldLandscape({ worlds }: WorldLandscapeProps) {
   const completedChapters = useProgressStore((state) => state.completedChapters);
   const completed = new Set(completedChapters);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [navigatingId, setNavigatingId] = useState<number | null>(null);
+
+  // Prefetch world pages so navigation is instant on tap
+  useEffect(() => {
+    worlds.forEach((world) => {
+      router.prefetch(`/worlds/${world.id}`);
+    });
+  }, [worlds, router]);
+
+  const handleSelect = (id: number) => {
+    if (navigatingId !== null) return; // prevent double-tap
+    setNavigatingId(id);
+    router.push(`/worlds/${id}`);
+  };
 
   const placed = worlds.map((world, index) => ({
     world,
@@ -277,6 +294,7 @@ export function WorldLandscape({ worlds }: WorldLandscapeProps) {
         WebkitOverflowScrolling: 'touch',
       }}
     >
+      <style>{`@keyframes zone-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }`}</style>
       <svg
         viewBox="0 0 500 1300"
         preserveAspectRatio="xMidYMid meet"
@@ -317,8 +335,9 @@ export function WorldLandscape({ worlds }: WorldLandscapeProps) {
             progressed={hasProgress(world, completed)}
             locked={!missionIds(world).some((id) => availableChapterIds.has(id))}
             hovered={hoveredId === world.id}
+            navigating={navigatingId === world.id}
             onHover={setHoveredId}
-            onSelect={(id) => router.push(`/worlds/${id}`)}
+            onSelect={handleSelect}
           />
         ))}
       </svg>

@@ -6,7 +6,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { availableChapterIds } from '@/lib/hierarchy';
 
@@ -410,6 +410,20 @@ export function RegionMap({
 }: RegionMapProps) {
   const router = useRouter();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
+
+  // Prefetch region pages for instant navigation
+  useEffect(() => {
+    regions.forEach((region) => {
+      router.prefetch(`/worlds/${worldId}/region/${region.id}`);
+    });
+  }, [regions, worldId, router]);
+
+  const handleSelect = (id: string) => {
+    if (navigatingId !== null) return;
+    setNavigatingId(id);
+    router.push(`/worlds/${worldId}/region/${id}`);
+  };
 
   const positions = regionPositions(regions.length);
   const placed = regions.map((region, i) => ({
@@ -503,7 +517,7 @@ export function RegionMap({
                 locked={!hasAvailableContent}
                 hovered={hoveredId === region.id}
                 onHover={setHoveredId}
-                onSelect={(id) => router.push(`/worlds/${worldId}/region/${id}`)}
+                onSelect={handleSelect}
               />
             );
           })}

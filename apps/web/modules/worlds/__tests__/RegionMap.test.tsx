@@ -6,7 +6,7 @@ import type { RegionMapRegion } from '../components/RegionMap';
 const push = vi.fn();
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push }),
+  useRouter: () => ({ push, prefetch: vi.fn() }),
 }));
 
 // Mock available chapters so test regions are not locked

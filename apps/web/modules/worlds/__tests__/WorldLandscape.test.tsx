@@ -4,7 +4,7 @@ import { WorldLandscape } from '../components/WorldLandscape';
 
 const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: mockPush, prefetch: vi.fn() }),
 }));
 
 vi.mock('@/store/progressStore', () => ({

@@ -7,7 +7,7 @@ import type { LayoutRegion } from '../data/mapNodes';
 // WorldMap navigates via the App Router and derives node status from the
 // progress store. Stub both so the component renders deterministically.
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), prefetch: vi.fn() }),
   useSearchParams: () => new URLSearchParams(),
 }));
 

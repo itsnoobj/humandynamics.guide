@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProgressStore } from '@/store/progressStore';
 import { generateMapLayout, type LayoutRegion } from '../data/mapNodes';
@@ -71,6 +72,7 @@ export function WorldMap({
 }: WorldMapProps) {
   const router = useRouter();
   const completedChapters = useProgressStore((state) => state.completedChapters);
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
 
   // A single `region` takes precedence and triggers the serpentine layout.
   const effectiveRegions = region ? [region] : (regions ?? []);
@@ -94,6 +96,21 @@ export function WorldMap({
     worldId != null && targetRegionId != null
       ? `/worlds/${worldId}/region/${targetRegionId}/mission/${missionId}`
       : `/chapter/${missionId}`;
+
+  // Prefetch mission pages for instant navigation on tap
+  useEffect(() => {
+    if (!region) return;
+    region.missions.forEach((id) => {
+      router.prefetch(missionHref(id));
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region]);
+
+  const handleMissionSelect = (id: string) => {
+    if (navigatingId !== null) return;
+    setNavigatingId(id);
+    router.push(missionHref(id));
+  };
 
   const backdrop = generateBackdrop(width, height);
   const terrain = regionAreas.flatMap((area) =>
@@ -186,7 +203,7 @@ export function WorldMap({
                 title={node.title}
                 status={isLocked ? 'locked' : node.status}
                 accent={accentColor}
-                onClick={isLocked ? undefined : () => router.push(missionHref(node.id))}
+                onClick={isLocked ? undefined : () => handleMissionSelect(node.id)}
               />
             );
           })}
