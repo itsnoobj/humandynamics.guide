@@ -377,7 +377,7 @@ export function GameCanvas() {
         const difficulty = Math.min(1, distanceRef.current / 12000);
         const speed = (BASE_SPEED + difficulty * 5) * step;
 
-        player.update(GRAVITY * step * step);
+        player.update(GRAVITY, step);
         distanceRef.current += speed;
 
         // Scroll + cull obstacles.

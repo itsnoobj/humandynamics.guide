@@ -63,11 +63,14 @@ export class Player {
 
   /**
    * Advance the player one frame under the given gravity.
-   * @param gravity downward acceleration in px/frame^2.
+   * @param gravity downward acceleration in px/frame^2 (at 60fps baseline).
+   * @param step    normalised time step (1.0 = one 60fps frame). Both gravity
+   *               and velocity integration are scaled by this so jump height
+   *               is frame-rate independent (fixes 120Hz Mac over-jumping).
    */
-  update(gravity: number): void {
-    this.vy += gravity;
-    this.y += this.vy;
+  update(gravity: number, step = 1): void {
+    this.vy += gravity * step;
+    this.y += this.vy * step;
 
     const floor = this.groundY - this.height;
     if (this.y >= floor) {
