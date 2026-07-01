@@ -3,25 +3,26 @@ import Link from 'next/link';
 
 import { loadChapter, listChapterIds } from '@/lib/content';
 import { worlds, findChapterLocation } from '@/lib/hierarchy';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://humandynamics.guide';
+import { SITE_URL, SITE_NAME, PUBLISHER, truncateDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Situations — A Field Guide to Being Human',
+  title: `Situations — ${SITE_NAME}`,
   description:
-    'Browse real workplace and life situations: dealing with credit-stealers, micromanagers, unfair promotions, office politics, and more. Each links to a story-driven lesson.',
+    'Browse real workplace and life situations: dealing with credit-stealers, micromanagers, unfair promotions, hard conversations, and office politics. Story-driven lessons for each.',
+  alternates: { canonical: `${SITE_URL}/situations` },
   openGraph: {
-    title: 'Situations — Every Human Dynamics Problem, Mapped',
+    title: 'What situation are you facing?',
     description:
-      "Find the situation you're facing — and learn the pattern behind it through stories from history and epics.",
+      'Find your problem below. Each links to a story-driven lesson with a practical move you can try this week.',
     url: `${SITE_URL}/situations`,
     type: 'website',
-    siteName: 'A Field Guide to Being Human',
+    siteName: SITE_NAME,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Situations — A Field Guide to Being Human',
-    description: "Find the situation you're facing — and learn the pattern behind it.",
+    title: `Situations — ${SITE_NAME}`,
+    description:
+      'Find your problem below. Each links to a story-driven lesson with a practical move.',
   },
 };
 
@@ -36,6 +37,24 @@ interface SituationEntry {
   regionTitle: string;
   worldTitle: string;
 }
+
+/**
+ * Search-friendly section headings that describe what the group is about in
+ * terms people actually search for, instead of internal jargon like
+ * "Understanding Yourself → Identity".
+ */
+const SECTION_HEADINGS: Record<string, string> = {
+  'Understanding Yourself → Identity': 'When you defend, compare, or people-please',
+  'Understanding Yourself → Ego': 'When ego protects and destroys',
+  'Understanding Yourself → Motivation': 'When you burn out, procrastinate, or lose drive',
+  'Understanding Yourself → Emotions': 'When anger, fear, shame, or envy take over',
+  'Understanding Other People → Incentives & Hidden Motives': "When people don't do what they say",
+  'Understanding Other People → Trust': 'When trust breaks or needs to be rebuilt',
+  'Understanding Other People → Status & Recognition':
+    'When credit, titles, and recognition change people',
+  'Understanding Other People → Difficult People':
+    "When you're dealing with a narcissist, manipulator, or victim",
+};
 
 export default async function SituationsPage() {
   const chapterIds = await listChapterIds();
@@ -66,7 +85,7 @@ export default async function SituationsPage() {
     });
   }
 
-  // Group by world → region for structured browsing
+  // Group by world → region
   const grouped = new Map<string, SituationEntry[]>();
   for (const entry of entries) {
     const key = `${entry.worldTitle} → ${entry.regionTitle}`;
@@ -74,15 +93,15 @@ export default async function SituationsPage() {
     grouped.get(key)!.push(entry);
   }
 
-  // JSON-LD for the collection page
+  // JSON-LD CollectionPage schema
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Situations — A Field Guide to Being Human',
+    name: 'What situation are you facing?',
     description:
       'Browse real situations people face at work and in life. Each links to a story-driven lesson from history, mythology, and psychology.',
     url: `${SITE_URL}/situations`,
-    publisher: { '@type': 'Organization', name: 'Human Dynamics', url: SITE_URL },
+    publisher: PUBLISHER,
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: entries.length,
@@ -142,26 +161,23 @@ export default async function SituationsPage() {
             }}
           >
             Each of these is a real problem people search for help with. Behind every one is a
-            recurring pattern — once you see it, you can navigate it. Click any to read the
-            story-driven breakdown.
+            recurring pattern — once you see it, you can navigate it. Click any to read the story
+            and get a practical move.
           </p>
         </header>
 
-        {[...grouped.entries()].map(([groupTitle, items]) => (
-          <section key={groupTitle} style={{ marginBottom: '2.5rem' }}>
+        {[...grouped.entries()].map(([groupKey, items]) => (
+          <section key={groupKey} style={{ marginBottom: '2.5rem' }}>
             <h2
               style={{
-                fontSize: '0.8rem',
+                fontSize: '1.1rem',
                 fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: 'var(--color-text-dim)',
+                color: 'var(--color-text)',
                 marginBottom: '1rem',
-                borderBottom: '1px solid var(--color-border)',
-                paddingBottom: '0.5rem',
+                lineHeight: 1.3,
               }}
             >
-              {groupTitle}
+              {SECTION_HEADINGS[groupKey] ?? groupKey}
             </h2>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {items.map((entry) => (
@@ -194,19 +210,9 @@ export default async function SituationsPage() {
                           marginTop: '0.25rem',
                         }}
                       >
-                        {entry.situation.slice(0, 120).replace(/\n/g, ' ')}…
+                        {truncateDescription(entry.situation, 140)}
                       </span>
                     )}
-                    <span
-                      style={{
-                        fontSize: '0.7rem',
-                        color: 'var(--color-gold)',
-                        marginTop: '0.3rem',
-                        display: 'block',
-                      }}
-                    >
-                      Forces: {entry.forces.join(', ')}
-                    </span>
                   </Link>
                 </li>
               ))}
@@ -229,8 +235,8 @@ export default async function SituationsPage() {
             }}
           >
             These situations repeat across industries, cultures, and centuries. The names change —
-            the dynamics don't. Each lesson uses a story from the Mahabharata, Roman history, or
-            real life to reveal the pattern, then gives you a move to try this week.
+            the dynamics don&apos;t. Each lesson uses a story from the Mahabharata, Roman history,
+            or real life to reveal the pattern, then gives you a move to try this week.
           </p>
           <p style={{ marginTop: '1rem' }}>
             <Link

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://humandynamics.guide';
+import { SITE_URL } from '@/lib/seo';
 
 /** Required for `output: 'export'` — tells Next.js to pre-render this route. */
 export const dynamic = 'force-static';
